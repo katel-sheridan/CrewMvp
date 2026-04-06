@@ -1,0 +1,141 @@
+import { useState, useRef, useEffect } from 'react';
+import { Grid2x2, Palette, PenLine, Monitor, Mic, Music, ChevronLeft, ChevronRight } from 'lucide-react';
+import { categories } from '../data/mock-data';
+import imgCategoryCard from "figma:asset/38a41378843224a48a265e4e85466b00b72d749d.png";
+import imgCategoryCard1 from "figma:asset/4af988ad36f9b26718af74591b00a3804c5094a9.png";
+import imgCategoryCard2 from "figma:asset/c8049c1a7457c77a0cd2f879f758713553cb2c8c.png";
+import imgCard from "figma:asset/7a853e7511057e3a202120775d82492bd5abff6b.png";
+import imgCard1 from "figma:asset/c4865453016b40f7e765ce95b287ea98be2e75ee.png";
+import imgCard2 from "figma:asset/c6b5ab862035608b2c956bf35bc7068bedbb261c.png";
+
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
+  grid: Grid2x2,
+  palette: Palette,
+  pencil: PenLine,
+  computer: Monitor,
+  mic: Mic,
+  music: Music,
+};
+
+const bgImages = [imgCategoryCard, imgCategoryCard1, imgCategoryCard2, imgCard, imgCard1, imgCard2];
+
+interface CategoryFilterProps {
+  selected: string;
+  onSelect: (id: string) => void;
+}
+
+export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftChevron, setShowLeftChevron] = useState(false);
+  const [showRightChevron, setShowRightChevron] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftChevron(scrollLeft > 0);
+      setShowRightChevron(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 300;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+      setTimeout(checkScroll, 300);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const current = scrollRef.current;
+    if (current) {
+      current.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      return () => {
+        current.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-[8px] items-start w-full">
+      <h1 className="font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[40px] text-[rgba(255,255,255,0.87)]">
+        Explore creatives around you.
+      </h1>
+      <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[20px] text-[rgba(255,255,255,0.6)]">
+        Find projects to join, or cool people to vibe with.
+      </p>
+      <div className="relative w-full mt-[40px]">
+        {/* Left fade */}
+        {showLeftChevron && (
+          <div className="absolute left-0 top-0 bottom-0 w-[60px] z-10 pointer-events-none bg-gradient-to-r from-[#0e0c13] to-transparent" />
+        )}
+
+        {/* Right fade */}
+        {showRightChevron && (
+          <div className="absolute right-0 top-0 bottom-0 w-[60px] z-10 pointer-events-none bg-gradient-to-l from-[#0e0c13] to-transparent" />
+        )}
+
+        {/* Left chevron */}
+        {showLeftChevron && (
+          <button
+            onClick={() => scroll('left')}
+            className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
+          >
+            <ChevronLeft size={20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={2} />
+          </button>
+        )}
+
+        {/* Right chevron */}
+        {showRightChevron && (
+          <button
+            onClick={() => scroll('right')}
+            className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
+          >
+            <ChevronRight size={20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={2} />
+          </button>
+        )}
+
+        <div
+          ref={scrollRef}
+          className="flex gap-[16px] items-center w-full overflow-x-hidden pb-[6px]"
+          onLoad={checkScroll}
+        >
+          {categories.map((cat, i) => {
+            const Icon = iconMap[cat.icon];
+            const isSelected = selected === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => onSelect(cat.id)}
+                className={`relative flex flex-col items-center justify-center h-[104px] min-w-[125px] px-[24px] py-[24px] rounded-[8px] cursor-pointer shrink-0 transition-all ${
+                  cat.id === 'all' ? 'w-[125px]' : 'w-[216px]'
+                }`}
+              >
+                {/* Background */}
+                <div className="absolute inset-0 pointer-events-none rounded-[8px]">
+                  <div className="absolute bg-[#212226] inset-0 rounded-[16px]" />
+                  <img alt="" className="absolute max-w-none object-cover opacity-20 rounded-[16px] size-full" src={bgImages[i]} />
+                </div>
+                {/* Selected border */}
+                {isSelected && (
+                  <div className="absolute border-2 border-[#a5ff5f] inset-0 pointer-events-none rounded-[16px]" />
+                )}
+                <div className="flex flex-col gap-[8px] items-center relative z-10">
+                  {Icon && <Icon size={cat.icon === 'computer' ? 28 : cat.icon === 'palette' || cat.icon === 'mic' || cat.icon === 'music' ? 24 : 20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={1.5} />}
+                  <span className="font-['Satoshi',sans-serif] font-[700] leading-[1.1] text-[18px] text-[rgba(255,255,255,0.87)] text-center whitespace-nowrap">
+                    {cat.label}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,12 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+html,
+body,
+#root {
+  background-color: #0e0c13;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
