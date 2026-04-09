@@ -74,10 +74,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
             {/* Title & actions row */}
             <div className="flex items-start justify-between gap-[16px]">
               <div className="flex flex-col gap-[8px] min-w-0">
-                <p className="font-['Satoshi',sans-serif] text-[12px] text-[rgba(255,255,255,0.38)] uppercase tracking-[0.8px]">
-                  Project details
-                </p>
-                <h2 className="font-['Tahoma',sans-serif] font-[700] text-[28px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+                <h2 className="font-['Satoshi',sans-serif] font-[700] text-[28px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                   {project.title}
                 </h2>
                 <div className="flex gap-[6px] font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.38)] leading-[1.4]">

@@ -102,7 +102,7 @@ function ConversationList({
   return (
     <div className="flex flex-col w-[260px] shrink-0 border-r border-[#323339] h-full">
       <div className="p-[16px] border-b border-[#323339]">
-        <h2 className="font-['Tahoma',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] mb-[12px]">
+        <h2 className="font-['Satoshi',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] mb-[12px]">
           Messages
         </h2>
         <div className="flex items-center gap-[8px] bg-[#212226] border border-[#323339] rounded-[8px] px-[10px] py-[8px]">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
 import type { Creator } from '../data/mock-data';
 import { useSavedItems } from '../context/SavedItemsContext';
-import { InterestTagPillList } from './InterestTagPill';
+import { InterestTagPillCompactList } from './InterestTagPill';
 
 interface CreatorCardProps {
   creator: Creator;
@@ -122,7 +122,7 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
         </div>
 
         {/* Interest tags */}
-        <InterestTagPillList tags={creator.interestTags} />
+        <InterestTagPillCompactList tags={creator.interestTags} minVisible={1} />
 
         {/* Bio */}
         <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[14px] text-[rgba(255,255,255,0.6)] line-clamp-2">

@@ -58,7 +58,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             )}
             <button
               onClick={(e) => { e.stopPropagation(); toggleSaveProject(project.id); }}
-              className="flex items-center justify-center size-[40px] rounded-full border border-[rgba(39,39,39,0.87)] cursor-pointer transition-colors hover:bg-[#2a2a2e]"
+              className="flex items-center justify-center size-[40px] rounded-full border border-[#323339] cursor-pointer transition-colors hover:bg-[#2a2a2e]"
             >
               <Bookmark size={14} className={saved ? 'fill-[#B4FF79] text-[#B4FF79]' : 'text-[#B4FF79]'} strokeWidth={1.5} />
             </button>

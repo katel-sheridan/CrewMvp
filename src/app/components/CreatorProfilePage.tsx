@@ -7,7 +7,7 @@ import { ShowcaseLightbox } from './ShowcaseLightbox';
 import { MessageRequestModal } from './MessageRequestModal';
 import { ProjectDetailModal } from './ProjectDetailModal';
 import { LinkPlatformIcon } from './LinkPlatformIcon';
-import { InterestTagPillCompactList, InterestTagPillList } from './InterestTagPill';
+import { InterestTagPillList } from './InterestTagPill';
 
 export function CreatorProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -77,21 +77,35 @@ export function CreatorProfilePage() {
         {/* Left sidebar */}
         <div className="flex flex-col gap-[20px] w-[280px] shrink-0 sticky top-[106px]">
           {/* Profile Card */}
-          <div className="flex flex-col gap-[20px] items-center bg-[#212226] border border-[#323339] rounded-[16px] p-[28px]">
-            {/* Avatar */}
-            {creator.avatar ? (
-              <img
-                alt=""
-                src={creator.avatar}
-                className="size-[88px] rounded-full object-cover shrink-0 border border-[#323339]"
-              />
-            ) : (
-              <div className="size-[88px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0 shadow-[0px_0px_32px_rgba(165,255,95,0.3)]">
-                <span className="font-['Tahoma',sans-serif] font-[700] text-[36px] text-black">
-                  {creator.username.replace('@', '').charAt(0).toUpperCase()}
-                </span>
+          <div className="flex flex-col gap-[20px] items-center bg-[#212226] border border-[#323339] rounded-[16px] p-[28px] overflow-hidden">
+            {/* Banner + avatar (Discord-style) */}
+            <div className="w-[calc(100%+56px)] -mx-[28px] -mt-[28px] relative">
+              <div className="h-[84px] w-full relative overflow-hidden">
+                <div
+                  className="absolute inset-0"
+                  style={{ backgroundColor: creator.profileBannerColor ?? '#272727' }}
+                />
               </div>
-            )}
+
+              <div className="absolute left-1/2 bottom-0 translate-y-1/2 -translate-x-1/2">
+                {creator.avatar ? (
+                  <img
+                    alt=""
+                    src={creator.avatar}
+                    className="size-[92px] rounded-full object-cover shrink-0 border border-[#323339] bg-[#212226]"
+                  />
+                ) : (
+                  <div className="size-[92px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0 shadow-[0px_0px_32px_rgba(165,255,95,0.3)] border border-[#323339]">
+                    <span className="font-['Tahoma',sans-serif] font-[700] text-[36px] text-black">
+                      {creator.username.replace('@', '').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Spacer to account for avatar overlap */}
+            <div className="h-[28px]" />
 
             {/* Username */}
             <span className="font-['Satoshi',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)]">
@@ -234,7 +248,7 @@ export function CreatorProfilePage() {
               <span className="font-['Satoshi',sans-serif] font-[700] text-[11px] text-[rgba(255,255,255,0.4)] uppercase tracking-[0.8px]">
                 Fandoms & Interests
               </span>
-              <InterestTagPillCompactList tags={creator.interestTags} minVisible={1} />
+              <InterestTagPillList tags={creator.interestTags} />
             </div>
           </div>
         </div>
@@ -274,7 +288,7 @@ export function CreatorProfilePage() {
 
           {/* About Me */}
           <div className="flex flex-col gap-[20px] bg-[#212226] border border-[#323339] rounded-[16px] p-[28px]">
-            <h2 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               About Me
             </h2>
             <p className="font-['Satoshi',sans-serif] font-[400] text-[15px] text-[rgba(255,255,255,0.7)] leading-[1.6]">
@@ -284,7 +298,7 @@ export function CreatorProfilePage() {
 
           {/* Showcase */}
           <div className="flex flex-col gap-[20px]">
-            <h2 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               Showcase
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-[14px]">
@@ -318,7 +332,7 @@ export function CreatorProfilePage() {
 
           {/* My Collaboration Style — below showcase; work-style tags match homepage pills */}
           <div className="flex flex-col gap-[20px] bg-[#212226] border border-[#323339] rounded-[16px] p-[28px]">
-            <h2 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               My Collaboration Style
             </h2>
             <p className="font-['Satoshi',sans-serif] font-[400] text-[15px] text-[rgba(255,255,255,0.7)] leading-[1.6]">
@@ -341,7 +355,7 @@ export function CreatorProfilePage() {
           {/* Recent Collaborations */}
           {creator.recentCollabs.length > 0 && (
             <div className="flex flex-col gap-[20px]">
-              <h2 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 Recent Collaborations
               </h2>
               <div className="flex flex-col gap-[14px]">
@@ -403,7 +417,7 @@ export function CreatorProfilePage() {
           {/* Testimonials / Recommendations */}
           {creator.testimonials.length > 0 && (
             <div className="flex flex-col gap-[20px]">
-              <h2 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 Recommendations
               </h2>
               <div className="flex flex-col gap-[14px]">

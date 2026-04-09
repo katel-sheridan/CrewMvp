@@ -224,7 +224,7 @@ export function Header() {
           {notifOpen && (
             <div className="absolute top-[40px] right-0 bg-[#212226] border border-[#323339] rounded-[12px] shadow-2xl z-50 w-[360px] overflow-hidden">
               <div className="px-[20px] py-[14px] border-b border-[#323339]">
-                <span className="font-['Tahoma',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)]">
+                <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)]">
                   Notifications
                 </span>
               </div>

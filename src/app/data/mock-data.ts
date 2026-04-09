@@ -26,6 +26,8 @@ export interface Creator {
   id: string;
   username: string;
   avatar: string;
+  /** Solid banner color used behind profile avatar. */
+  profileBannerColor?: string;
   bio: string;
   portfolioImages: string[];
   skillTags: string[];
@@ -164,6 +166,7 @@ export const creators: Creator[] = [
     id: '1',
     username: '@kitsune_art',
     avatar: avatarKitsune,
+    profileBannerColor: '#1f5a3b',
     bio: "I'm looking for someone to collab with to make a comic! I specialize in character design and sequential art.",
     portfolioImages: [
       'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -223,6 +226,7 @@ export const creators: Creator[] = [
     id: '2',
     username: '@starbinski',
     avatar: avatarStarbinski,
+    profileBannerColor: '#4a2a4f',
     bio: 'Emotional prose and personal essays—pieces from “a book I’ll never write.” Open to narrative collabs and IF projects.',
     portfolioImages: [
       imgStarbinskiGlimpse,
@@ -275,6 +279,7 @@ export const creators: Creator[] = [
     id: '3',
     username: '@pixelforge',
     avatar: avatarPixelforge,
+    profileBannerColor: '#2b3d6b',
     bio: 'Game developer specializing in Unity and Unreal Engine. Looking for artists and composers to collaborate on an indie RPG.',
     portfolioImages: [
       'https://images.unsplash.com/photo-1647727416391-0bc8f5bda78e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHwzZCUyMHJlbmRlciUyMGNoYXJhY3RlciUyMGRlc2lnbnxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -316,6 +321,7 @@ export const creators: Creator[] = [
     id: '4',
     username: '@echo_voice',
     avatar: avatarEchoVoice,
+    profileBannerColor: '#4b3a22',
     bio: 'Professional voice actor with home studio setup. Available for character roles, narration, and audio drama projects.',
     portfolioImages: [
       'https://images.unsplash.com/photo-1750327324364-6700eab9ad7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXRlcmNvbG9yJTIwcGFpbnRpbmclMjBhYnN0cmFjdCUyMGFydHxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -366,6 +372,7 @@ export const creators: Creator[] = [
     id: '5',
     username: '@synthwave_sam',
     avatar: avatarSynthwaveSam,
+    profileBannerColor: '#2a4b43',
     bio: 'Composer and sound designer creating atmospheric soundscapes. Interested in horror and sci-fi game projects.',
     portfolioImages: [
       'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMHJldHJvJTIwZ2FtZXxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -404,6 +411,7 @@ export const creators: Creator[] = [
     id: '6',
     username: '@artisan_lily',
     avatar: avatarArtisanLily,
+    profileBannerColor: '#5a2d1f',
     bio: 'Freelance illustrator focused on fantasy and character art. Open to both paid and passion projects!',
     portfolioImages: [
       'https://images.unsplash.com/photo-1763732397784-c5ff2651d40c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21pYyUyMGJvb2slMjBhcnQlMjBwYW5lbCUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
