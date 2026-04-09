@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { X, Bookmark, Calendar, Clock, Tag, Users, ChevronRight } from 'lucide-react';
-import type { Project } from '../data/mock-data';
+import { X, Bookmark, Calendar, Clock, Tag, Users, ChevronRight, Layers } from 'lucide-react';
+import { type Project, getCreatorAvatarByUsername } from '../data/mock-data';
 import { useSavedItems } from '../context/SavedItemsContext';
 import { ShowcaseLightbox } from './ShowcaseLightbox';
 
@@ -37,6 +37,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
               className="size-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1e] via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-black/10" />
 
             {/* Close button */}
             <button
@@ -47,21 +48,21 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
             </button>
 
             {/* Tags overlay */}
-            <div className="absolute bottom-[16px] left-[28px] flex gap-[6px] z-10">
+            <div className="absolute bottom-[16px] left-[28px] flex gap-[6px] z-10 flex-wrap pr-[28px]">
               {project.tags.map((tag) => (
                 <span
                   key={tag.label}
                   className={`flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-center whitespace-nowrap ${
                     tag.type === 'featured'
-                      ? 'bg-gradient-to-r from-[#a8ff78] to-[#78ffd6] text-black'
-                      : 'bg-[rgba(0,0,0,0.5)] border border-[rgba(255,255,255,0.2)] text-[rgba(255,255,255,0.87)]'
+                      ? 'bg-[#a5ff5f] text-black'
+                      : 'bg-[rgba(39,39,39,0.87)] border border-[#323339] text-[rgba(255,255,255,0.87)]'
                   }`}
                 >
                   {tag.label}
                 </span>
               ))}
               {project.deadlineDays && (
-                <span className="bg-[rgba(53,42,23,0.9)] border border-[#614e2d] flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(236,215,178,0.87)] text-center whitespace-nowrap">
+                <span className="bg-[rgba(53,42,23,0.9)] border border-[#614e2d] flex h-[24px] items-center justify-center px-[10px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(236,215,178,0.87)] text-center whitespace-nowrap">
                   Deadline in {project.deadlineDays} days
                 </span>
               )}
@@ -73,6 +74,9 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
             {/* Title & actions row */}
             <div className="flex items-start justify-between gap-[16px]">
               <div className="flex flex-col gap-[8px] min-w-0">
+                <p className="font-['Satoshi',sans-serif] text-[12px] text-[rgba(255,255,255,0.38)] uppercase tracking-[0.8px]">
+                  Project details
+                </p>
                 <h2 className="font-['Tahoma',sans-serif] font-[700] text-[28px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                   {project.title}
                 </h2>
@@ -108,7 +112,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
                 { icon: Calendar, label: 'Started', value: project.startDate },
                 { icon: Users, label: 'Status', value: project.status },
               ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex flex-col gap-[6px] bg-[#212226] rounded-[8px] p-[16px]">
+                <div key={label} className="flex flex-col gap-[6px] bg-[#212226] border border-[#323339] rounded-[12px] p-[16px]">
                   <div className="flex gap-[6px] items-center">
                     <Icon size={12} className="text-[rgba(255,255,255,0.4)]" strokeWidth={1.5} />
                     <span className="font-['Satoshi',sans-serif] font-[500] text-[11px] text-[rgba(255,255,255,0.4)] uppercase tracking-[0.8px]">
@@ -123,7 +127,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
             </div>
 
             {/* What We're Looking For */}
-            <div className="flex flex-col gap-[16px] bg-[#212226] rounded-[12px] p-[24px]">
+            <div className="flex flex-col gap-[16px] bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
               <h3 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 What We're Looking For
               </h3>
@@ -134,7 +138,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
                 {project.roles.map((r) => (
                   <div
                     key={r.role}
-                    className="flex items-center gap-[8px] h-[32px] pl-[14px] pr-[10px] rounded-[12px] border border-[#323339] bg-[#2a2a2e]"
+                    className="flex items-center gap-[8px] h-[32px] pl-[14px] pr-[10px] rounded-[12px] border border-[#323339] bg-[rgba(39,39,39,0.87)]"
                   >
                     <span className="font-['Satoshi',sans-serif] font-[500] text-[13px] text-[rgba(255,255,255,0.87)]">
                       {r.role}
@@ -148,7 +152,7 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
             </div>
 
             {/* Overview */}
-            <div className="flex flex-col gap-[16px] bg-[#212226] rounded-[12px] p-[24px]">
+            <div className="flex flex-col gap-[16px] bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
               <h3 className="font-['Tahoma',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 Overview
               </h3>
@@ -188,6 +192,23 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
                 </div>
               </div>
             )}
+            {project.showcaseImages.length === 0 && (
+              <div className="flex flex-col gap-[12px] bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
+                <div className="flex items-center gap-[10px]">
+                  <div className="size-[36px] rounded-[10px] bg-[rgba(39,39,39,0.87)] border border-[#323339] flex items-center justify-center">
+                    <Layers size={16} className="text-[#a5ff5f]" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="font-['Tahoma',sans-serif] font-[700] text-[16px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+                      No showcase yet
+                    </p>
+                    <p className="mt-[4px] font-['Satoshi',sans-serif] text-[13px] text-[rgba(255,255,255,0.6)] leading-[1.4]">
+                      This project hasn’t added screenshots or previews.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* The Team */}
             <div className="flex flex-col gap-[16px]">
@@ -195,17 +216,27 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
                 The Team
               </h3>
               <div className="flex flex-col gap-[8px]">
-                {project.team.map((member) => (
+                {project.team.map((member) => {
+                  const avatarSrc = member.avatar || getCreatorAvatarByUsername(member.username);
+                  const initial = member.username.replace('@', '').charAt(0).toUpperCase();
+                  return (
                   <div
                     key={member.username}
-                    className="flex gap-[14px] items-center bg-[#212226] rounded-[12px] p-[16px] hover:bg-[#2a2a2e] transition-colors cursor-pointer group"
+                    className="flex gap-[14px] items-center bg-[#212226] border border-[#323339] rounded-[16px] p-[16px] hover:bg-[#2a2a2e] transition-colors cursor-pointer group"
                   >
-                    {/* Avatar */}
-                    <div className="size-[40px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
-                      <span className="font-['Satoshi',sans-serif] font-[700] text-[16px] text-black">
-                        {member.username.replace('@', '').charAt(0).toUpperCase()}
-                      </span>
-                    </div>
+                    {avatarSrc ? (
+                      <img
+                        alt=""
+                        src={avatarSrc}
+                        className="size-[40px] rounded-full object-cover shrink-0 border border-[#323339]"
+                      />
+                    ) : (
+                      <div className="size-[40px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
+                        <span className="font-['Satoshi',sans-serif] font-[700] text-[16px] text-black">
+                          {initial}
+                        </span>
+                      </div>
+                    )}
                     {/* Info */}
                     <div className="flex flex-col gap-[2px] flex-1 min-w-0">
                       <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)]">
@@ -217,7 +248,8 @@ export function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps
                     </div>
                     <ChevronRight size={14} className="text-[rgba(255,255,255,0.2)] group-hover:text-[rgba(255,255,255,0.5)] transition-colors shrink-0" strokeWidth={1.5} />
                   </div>
-                ))}
+                );
+                })}
               </div>
             </div>
           </div>

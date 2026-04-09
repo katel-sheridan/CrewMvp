@@ -41,7 +41,7 @@ export function HomePage() {
   }, [selectedCategory, paymentType, duration, availability]);
 
   return (
-    <div className="flex flex-col gap-[64px] w-full">
+    <div className="flex flex-col gap-[48px] w-full">
       <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
 
       <div className="flex flex-col gap-[32px] w-full">
@@ -50,10 +50,10 @@ export function HomePage() {
           <button
             onClick={() => setActiveTab('projects')}
             className={`flex gap-[8px] items-center justify-center py-[8px] cursor-pointer relative ${
-              activeTab === 'projects' ? 'border-b-2 border-[#a5ff5f]' : ''
+              activeTab === 'projects' ? 'border-b-2 border-[#b4ff79]' : ''
             }`}
           >
-            <span className={`font-['Satoshi',sans-serif] font-[700] leading-[1.1] text-[24px] whitespace-nowrap ${
+            <span className={`font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[24px] whitespace-nowrap ${
               activeTab === 'projects' ? 'text-[rgba(255,255,255,0.87)]' : 'text-[rgba(255,255,255,0.6)]'
             }`}>
               Projects
@@ -62,10 +62,10 @@ export function HomePage() {
           <button
             onClick={() => setActiveTab('creators')}
             className={`flex gap-[8px] items-center justify-center py-[8px] cursor-pointer relative ${
-              activeTab === 'creators' ? 'border-b-2 border-[#a5ff5f]' : ''
+              activeTab === 'creators' ? 'border-b-2 border-[#b4ff79]' : ''
             }`}
           >
-            <span className={`font-['Satoshi',sans-serif] font-[700] leading-[1.1] text-[24px] whitespace-nowrap ${
+            <span className={`font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[24px] whitespace-nowrap ${
               activeTab === 'creators' ? 'text-[rgba(255,255,255,0.87)]' : 'text-[rgba(255,255,255,0.6)]'
             }`}>
               Creators
@@ -103,7 +103,7 @@ export function HomePage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[16px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] justify-items-center">
               {filteredCreators.length > 0 ? (
                 filteredCreators.map((creator) => (
                   <CreatorCard

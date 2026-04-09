@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
 import type { Creator } from '../data/mock-data';
 import { useSavedItems } from '../context/SavedItemsContext';
+import { InterestTagPillList } from './InterestTagPill';
 
 interface CreatorCardProps {
   creator: Creator;
@@ -22,8 +23,6 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
     e.stopPropagation();
     setCurrentImage((prev) => (prev === creator.portfolioImages.length - 1 ? 0 : prev + 1));
   };
-
-  const isOpen = creator.availability === 'Open';
 
   return (
     <div
@@ -48,14 +47,14 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
           {creator.skillTags.map((tag) => (
             <span
               key={tag}
-              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(14,1,28,0.6)] border border-[#544f5f] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
+              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
             >
               {tag}
             </span>
           ))}
           {creator.duration && creator.duration !== 'Any' && (
             <span
-              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(14,1,28,0.6)] border border-[#544f5f] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
+              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
             >
               {creator.duration}
             </span>
@@ -65,15 +64,15 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
         {/* Carousel arrows */}
         <button
           onClick={prevImage}
-          className="absolute left-[8px] top-1/2 -translate-y-1/2 bg-[#3b3547] size-[32px] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]"
+          className="absolute left-[12px] top-1/2 -translate-y-1/2 bg-[rgba(39,39,39,0.87)] border border-[#323339] size-[25px] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]"
         >
-          <ChevronLeft size={18} className="text-[rgba(255,255,255,0.87)]" />
+          <ChevronLeft size={15} className="text-[rgba(255,255,255,0.87)]" />
         </button>
         <button
           onClick={nextImage}
-          className="absolute right-[8px] top-1/2 -translate-y-1/2 bg-[#3b3547] size-[32px] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]"
+          className="absolute right-[12px] top-1/2 -translate-y-1/2 bg-[rgba(39,39,39,0.87)] border border-[#323339] size-[25px] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]"
         >
-          <ChevronRight size={18} className="text-[rgba(255,255,255,0.87)]" />
+          <ChevronRight size={15} className="text-[rgba(255,255,255,0.87)]" />
         </button>
 
         {/* Dots */}
@@ -94,7 +93,7 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
             e.stopPropagation();
             toggleSaveCreator(creator.id);
           }}
-          className="absolute top-[12px] right-[12px] flex items-center justify-center size-[32px] rounded-full bg-[#3b3547] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)] z-10"
+          className="absolute top-[12px] right-[12px] flex items-center justify-center size-[33px] rounded-full bg-[rgba(39,39,39,0.87)] border border-[#323339] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)] z-10"
         >
           <Bookmark size={14} className={saved ? 'fill-[#B4FF79] text-[#B4FF79]' : 'text-[rgba(255,255,255,0.87)]'} strokeWidth={1.5} />
         </button>
@@ -104,27 +103,26 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
       <div className="flex flex-col gap-[10px] p-[16px]">
         {/* Avatar + Username */}
         <div className="flex gap-[8px] items-center">
-          <div className="size-[28px] rounded-full bg-[#a5ff5f] flex items-center justify-center shrink-0">
-            <span className="font-['Satoshi',sans-serif] font-[700] text-[12px] text-black">
-              {creator.username.replace('@', '').charAt(0).toUpperCase()}
-            </span>
-          </div>
+          {creator.avatar ? (
+            <img
+              alt=""
+              src={creator.avatar}
+              className="size-[28px] rounded-full object-cover shrink-0 ring-1 ring-[#323339]"
+            />
+          ) : (
+            <div className="size-[28px] rounded-full bg-[#a5ff5f] flex items-center justify-center shrink-0">
+              <span className="font-['Satoshi',sans-serif] font-[700] text-[12px] text-black">
+                {creator.username.replace('@', '').charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
           <span className="font-['Satoshi',sans-serif] font-[500] text-[14px] text-[rgba(255,255,255,0.87)] leading-[1.4]">
             {creator.username}
           </span>
         </div>
 
         {/* Interest tags */}
-        <div className="flex gap-[6px] flex-wrap">
-          {creator.interestTags.map((tag) => (
-            <span
-              key={tag}
-              className="flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[11px] text-[rgba(255,255,255,0.6)] text-center whitespace-nowrap tracking-[0.275px] uppercase"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <InterestTagPillList tags={creator.interestTags} />
 
         {/* Bio */}
         <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[14px] text-[rgba(255,255,255,0.6)] line-clamp-2">

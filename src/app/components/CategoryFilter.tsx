@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Grid2x2, Palette, PenLine, Monitor, Mic, Music, ChevronLeft, ChevronRight } from 'lucide-react';
 import { categories } from '../data/mock-data';
-import imgCategoryCard from "figma:asset/38a41378843224a48a265e4e85466b00b72d749d.png";
-import imgCategoryCard1 from "figma:asset/4af988ad36f9b26718af74591b00a3804c5094a9.png";
-import imgCategoryCard2 from "figma:asset/c8049c1a7457c77a0cd2f879f758713553cb2c8c.png";
-import imgCard from "figma:asset/7a853e7511057e3a202120775d82492bd5abff6b.png";
-import imgCard1 from "figma:asset/c4865453016b40f7e765ce95b287ea98be2e75ee.png";
-import imgCard2 from "figma:asset/c6b5ab862035608b2c956bf35bc7068bedbb261c.png";
+import imgAll from "../../assets/categories/all.png";
+import imgIllustration from "../../assets/categories/illustration.png";
+import imgWriting from "../../assets/categories/writing.png";
+import imgDevelopment from "../../assets/categories/development.png";
+import imgVoiceActing from "../../assets/categories/voice-acting.png";
+import imgComposing from "../../assets/categories/composing.png";
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
   grid: Grid2x2,
@@ -17,7 +17,14 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
   music: Music,
 };
 
-const bgImages = [imgCategoryCard, imgCategoryCard1, imgCategoryCard2, imgCard, imgCard1, imgCard2];
+const bgImages: Record<string, string> = {
+  all: imgAll,
+  illustration: imgIllustration,
+  writing: imgWriting,
+  development: imgDevelopment,
+  'voice-acting': imgVoiceActing,
+  composing: imgComposing,
+};
 
 interface CategoryFilterProps {
   selected: string;
@@ -108,6 +115,7 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
           {categories.map((cat, i) => {
             const Icon = iconMap[cat.icon];
             const isSelected = selected === cat.id;
+            const bgImage = bgImages[cat.id] ?? bgImages.all;
             return (
               <button
                 key={cat.id}
@@ -119,7 +127,8 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
                 {/* Background */}
                 <div className="absolute inset-0 pointer-events-none rounded-[8px]">
                   <div className="absolute bg-[#212226] inset-0 rounded-[16px]" />
-                  <img alt="" className="absolute max-w-none object-cover opacity-20 rounded-[16px] size-full" src={bgImages[i]} />
+                  <img alt="" className="absolute max-w-none object-cover opacity-40 rounded-[16px] size-full" src={bgImage} />
+                  <div className="absolute inset-0 rounded-[16px] bg-black/45" />
                 </div>
                 {/* Selected border */}
                 {isSelected && (

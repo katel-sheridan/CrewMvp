@@ -1,9 +1,74 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, ChevronDown, MessageSquareText, Bell } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import svgPaths from '../../imports/svg-xv82cnj567';
-import imgEllipse1 from "figma:asset/afc476bc7a1c459e0be6930b5f8abe1b5ddadb61.png";
 import { useMessaging } from '../context/MessagingContext';
+import { UserProfileAvatar } from './UserProfileAvatar';
+const imgSearch = new URL('../../assets/icons/header/search.svg', import.meta.url).href;
+const imgChevronDown20 = new URL('../../assets/icons/header/chevron-down-20.svg', import.meta.url).href;
+
+const imgNotifStroke1 = new URL('../../assets/icons/header/notif-stroke-1.svg', import.meta.url).href;
+const imgNotifStroke2 = new URL('../../assets/icons/header/notif-stroke-2.svg', import.meta.url).href;
+
+const imgChatA = new URL('../../assets/icons/header/chat-vector-a.svg', import.meta.url).href;
+const imgChatB = new URL('../../assets/icons/header/chat-vector-b.svg', import.meta.url).href;
+const imgChatC = new URL('../../assets/icons/header/chat-vector-c.svg', import.meta.url).href;
+
+function HeaderSearchIcon() {
+  return (
+    <img alt="" src={imgSearch} className="size-[20px] shrink-0 opacity-90" />
+  );
+}
+
+function HeaderChevronDown20() {
+  return <img alt="" src={imgChevronDown20} className="size-[20px] shrink-0" />;
+}
+
+function ChatIcon({ className }: { className?: string }) {
+  // Matches the Figma MCP structure for node `257:4192` (chat-bubble).
+  return (
+    <div className={className} aria-hidden="true">
+      <div className="overflow-clip relative shrink-0 size-[23.75px]">
+        <div className="absolute inset-[47.92%_27.08%_47.92%_68.75%]">
+          <div className="absolute inset-[-90%]">
+            <img alt="" className="block max-w-none size-full" src={imgChatA} />
+          </div>
+        </div>
+        <div className="absolute inset-[47.92%]">
+          <div className="absolute inset-[-90%]">
+            <img alt="" className="block max-w-none size-full" src={imgChatA} />
+          </div>
+        </div>
+        <div className="absolute inset-[47.92%_68.75%_47.92%_27.08%]">
+          <div className="absolute inset-[-90%]">
+            <img alt="" className="block max-w-none size-full" src={imgChatB} />
+          </div>
+        </div>
+        <div className="absolute inset-[8.33%]">
+          <div className="absolute inset-[-4.5%]">
+            <img alt="" className="block max-w-none size-full" src={imgChatC} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NotifIcon({ className }: { className?: string }) {
+  // Matches the Figma MCP structure for node `257:4206` (notifications-outline).
+  return (
+    <div className={className} aria-hidden="true">
+      <div className="overflow-clip relative shrink-0 size-[23.75px]">
+        <div className="absolute inset-[6.25%_12.44%_21.88%_12.44%]">
+          <img alt="" className="absolute block max-w-none size-full" src={imgNotifStroke1} />
+        </div>
+        <div className="absolute inset-[71.88%_34.38%_6.25%_34.38%]">
+          <img alt="" className="absolute block max-w-none size-full" src={imgNotifStroke2} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Header() {
   const [postOpen, setPostOpen] = useState(false);
@@ -91,7 +156,7 @@ export function Header() {
       {/* Search */}
       <div className="flex-1 flex justify-center min-w-0">
         <div className="bg-[#212226] flex gap-[8px] h-[38px] items-center px-[16px] py-[12px] rounded-[30px] w-full max-w-[468px] border-b border-[#323339]">
-          <Search size={20} className="text-[#6e6977] shrink-0" />
+          <HeaderSearchIcon />
           <input
             type="text"
             placeholder="Search for..."
@@ -138,7 +203,7 @@ export function Header() {
             if (accepted) navigate(`/chat/${accepted.id}`);
           }}
         >
-          <MessageSquareText size={20} strokeWidth={1.5} />
+          <ChatIcon className="content-stretch flex items-center justify-center relative rounded-[11873.813px] shrink-0" />
         </button>
 
         {/* Notifications */}
@@ -147,7 +212,7 @@ export function Header() {
             className="cursor-pointer text-[rgba(255,255,255,0.87)] hover:text-white transition-colors relative flex items-center justify-center size-[36px]"
             onClick={() => setNotifOpen(!notifOpen)}
           >
-            <Bell size={20} strokeWidth={1.5} />
+            <NotifIcon className="content-stretch flex items-center justify-center relative rounded-[11873.813px] shrink-0" />
             {unreadCount > 0 && (
               <span className="absolute top-[2px] right-[2px] size-[16px] rounded-full bg-[#a5ff5f] flex items-center justify-center">
                 <span className="font-['Satoshi',sans-serif] font-[700] text-[9px] text-black">{unreadCount}</span>
@@ -209,7 +274,7 @@ export function Header() {
 
         {/* User profile */}
         <div className="bg-[#212226] flex gap-[6px] items-center justify-center px-[8px] py-[6px] rounded-[8px] cursor-pointer">
-          <img alt="" className="size-[24px] rounded-full object-cover" src={imgEllipse1} />
+          <UserProfileAvatar className="size-[24px] rounded-full object-cover" />
           <p className="font-['Satoshi',sans-serif] font-[500] leading-[1.4] text-[14px] text-[rgba(255,255,255,0.87)] whitespace-nowrap hidden sm:block">@corgiburrito</p>
           <ChevronDown size={16} className="text-[rgba(255,255,255,0.87)] hidden sm:block" />
         </div>

@@ -66,7 +66,7 @@ export function SavedPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-[16px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] justify-items-center">
             {savedCreatorsList.length > 0 ? (
               savedCreatorsList.map((creator) => (
                 <CreatorCard
@@ -76,7 +76,7 @@ export function SavedPage() {
                 />
               ))
             ) : (
-              <div className="col-span-3 flex items-center justify-center h-[200px] bg-[#212226] rounded-[8px]">
+              <div className="col-span-full flex items-center justify-center h-[200px] bg-[#212226] rounded-[8px]">
                 <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.38)]">
                   No saved creators yet
                 </p>

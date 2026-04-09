@@ -1,4 +1,8 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { getCreatorAvatarById } from '../data/mock-data';
+
+/** Logged-in user for mock data and message UI (avatar alignment). */
+export const CURRENT_USER_HANDLE = '@corgiburrito';
 
 export interface Message {
   id: string;
@@ -16,11 +20,6 @@ export interface Conversation {
   creatorAvatar?: string;
   messages: Message[];
   status: 'pending' | 'accepted' | 'declined';
-  creatorInfo?: {
-    localTime: string;
-    interests: string[];
-    links: { platform: string; url: string }[];
-  };
 }
 
 export interface Notification {
@@ -51,19 +50,8 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
       id: 'conv-1',
       creatorId: '1',
       creatorUsername: '@kitsune_art',
+      creatorAvatar: getCreatorAvatarById('1'),
       status: 'accepted',
-      creatorInfo: {
-        localTime: '8:40 PM',
-        interests: ['Anime', 'Fantasy', 'Manga', 'Dark Art'],
-        links: [
-          { platform: 'ArtStation', url: '#' },
-          { platform: 'Twitter', url: '#' },
-          { platform: 'Instagram', url: '#' },
-          { platform: 'Behance', url: '#' },
-          { platform: 'DeviantArt', url: '#' },
-          { platform: 'Tumblr', url: '#' },
-        ],
-      },
       messages: [
         {
           id: 'msg-0',
@@ -102,29 +90,21 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
     {
       id: 'conv-2',
       creatorId: '3',
-      creatorUsername: '@pixel_witch',
+      creatorUsername: '@pixelforge',
+      creatorAvatar: getCreatorAvatarById('3'),
       status: 'accepted',
-      creatorInfo: {
-        localTime: '3:40 PM',
-        interests: ['Pixel Art', 'Gaming', 'Retro', 'Indie Dev'],
-        links: [
-          { platform: 'Twitter', url: '#' },
-          { platform: 'Itch.io', url: '#' },
-          { platform: 'GitHub', url: '#' },
-        ],
-      },
       messages: [
         {
           id: 'msg-10',
           from: '@corgiburrito',
-          to: '@pixel_witch',
+          to: '@pixelforge',
           text: "Hi! Saw your pixel art sprites — they're incredible. Would you be open to doing some character sprites for a game jam project?",
           timestamp: '2026-03-28T10:00:00Z',
           type: 'sent',
         },
         {
           id: 'msg-11',
-          from: '@pixel_witch',
+          from: '@pixelforge',
           to: '@corgiburrito',
           text: "Absolutely! I love game jams. What's the theme and timeline?",
           timestamp: '2026-03-28T12:30:00Z',
@@ -135,21 +115,14 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
     {
       id: 'conv-3',
       creatorId: '5',
-      creatorUsername: '@soundscape_sam',
+      creatorUsername: '@synthwave_sam',
+      creatorAvatar: getCreatorAvatarById('5'),
       status: 'pending',
-      creatorInfo: {
-        localTime: '11:40 AM',
-        interests: ['Music Production', 'Ambient', 'Lo-fi', 'Sound Design'],
-        links: [
-          { platform: 'SoundCloud', url: '#' },
-          { platform: 'Spotify', url: '#' },
-        ],
-      },
       messages: [
         {
           id: 'msg-20',
           from: '@corgiburrito',
-          to: '@soundscape_sam',
+          to: '@synthwave_sam',
           text: "Hey Sam! I'm looking for someone to compose a soundtrack for a visual novel project. Your ambient work is exactly the vibe I'm going for.",
           timestamp: '2026-04-05T09:00:00Z',
           type: 'sent',
@@ -177,6 +150,7 @@ export function MessagingProvider({ children }: { children: ReactNode }) {
       id: convId,
       creatorId,
       creatorUsername,
+      creatorAvatar: getCreatorAvatarById(creatorId),
       status: 'pending',
       messages: [
         {

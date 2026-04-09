@@ -1,7 +1,76 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { Search, Send, Paperclip, Smile, MoreHorizontal, MapPin, ExternalLink, User } from 'lucide-react';
-import { useMessaging, Conversation } from '../context/MessagingContext';
+import { Search, Send, Paperclip, Smile, MoreHorizontal, Clock, ExternalLink, User, MessageSquareText } from 'lucide-react';
+import { useMessaging, Conversation, CURRENT_USER_HANDLE } from '../context/MessagingContext';
+import { creators, getCreatorSidebarLinkEntries } from '../data/mock-data';
+import { UserProfileAvatar } from './UserProfileAvatar';
+import { LinkPlatformIcon } from './LinkPlatformIcon';
+import { InterestTagPillList } from './InterestTagPill';
+
+function PeerAvatar({
+  avatarUrl,
+  username,
+  variant,
+}: {
+  avatarUrl?: string;
+  username: string;
+  variant: 'list' | 'header' | 'message' | 'panel';
+}) {
+  const initial = username.replace('@', '').charAt(0).toUpperCase();
+  if (avatarUrl) {
+    if (variant === 'message') {
+      return (
+        <img
+          alt=""
+          src={avatarUrl}
+          className="size-[32px] rounded-full object-cover shrink-0 mt-[2px] ring-1 ring-[#323339]"
+        />
+      );
+    }
+    if (variant === 'panel') {
+      return (
+        <img
+          alt=""
+          src={avatarUrl}
+          className="size-[64px] rounded-full object-cover shrink-0 ring-2 ring-[#323339] shadow-[0px_0px_32px_rgba(165,255,95,0.2)]"
+        />
+      );
+    }
+    return (
+      <img
+        alt=""
+        src={avatarUrl}
+        className="size-[36px] rounded-full object-cover shrink-0 ring-1 ring-[#323339]"
+      />
+    );
+  }
+  if (variant === 'message') {
+    return (
+      <div className="size-[32px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0 mt-[2px]">
+        <span className="font-['Tahoma',sans-serif] font-[700] text-[11px] text-black">{initial}</span>
+      </div>
+    );
+  }
+  if (variant === 'panel') {
+    return (
+      <div className="size-[64px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shadow-[0px_0px_32px_rgba(165,255,95,0.3)]">
+        <span className="font-['Tahoma',sans-serif] font-[700] text-[24px] text-black">{initial}</span>
+      </div>
+    );
+  }
+  if (variant === 'header') {
+    return (
+      <div className="size-[36px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
+        <span className="font-['Tahoma',sans-serif] font-[700] text-[14px] text-black">{initial}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="size-[36px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
+      <span className="font-['Tahoma',sans-serif] font-[700] text-[13px] text-black">{initial}</span>
+    </div>
+  );
+}
 
 function timeAgo(ts: string) {
   const diff = Date.now() - new Date(ts).getTime();
@@ -47,9 +116,17 @@ function ConversationList({
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {filtered.map((conv) => {
+        {filtered.length === 0 ? (
+          <div className="p-[16px]">
+            <div className="bg-[#212226] border border-[#323339] rounded-[12px] p-[16px]">
+              <p className="font-['Satoshi',sans-serif] text-[13px] text-[rgba(255,255,255,0.6)] leading-[1.4]">
+                No conversations match your search.
+              </p>
+            </div>
+          </div>
+        ) : (
+          filtered.map((conv) => {
           const lastMsg = conv.messages[conv.messages.length - 1];
-          const initial = conv.creatorUsername.replace('@', '').charAt(0).toUpperCase();
           const isActive = conv.id === activeId;
           return (
             <button
@@ -59,11 +136,7 @@ function ConversationList({
                 isActive ? 'bg-[#2a2a2e]' : 'hover:bg-[#212226]'
               }`}
             >
-              <div className="size-[36px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
-                <span className="font-['Tahoma',sans-serif] font-[700] text-[13px] text-black">
-                  {initial}
-                </span>
-              </div>
+              <PeerAvatar avatarUrl={conv.creatorAvatar} username={conv.creatorUsername} variant="list" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-[4px]">
                   <span className="font-['Satoshi',sans-serif] font-[700] text-[13px] text-[rgba(255,255,255,0.87)] truncate">
@@ -84,7 +157,25 @@ function ConversationList({
               </div>
             </button>
           );
-        })}
+        }))}
+      </div>
+    </div>
+  );
+}
+
+function ChatEmptyState() {
+  return (
+    <div className="flex-1 min-w-0 h-full flex items-center justify-center px-[24px]">
+      <div className="max-w-[420px] w-full bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
+        <div className="size-[48px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] flex items-center justify-center mb-[14px]">
+          <MessageSquareText size={20} className="text-[#a5ff5f]" strokeWidth={1.5} />
+        </div>
+        <h2 className="font-['Tahoma',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+          Select a conversation
+        </h2>
+        <p className="mt-[8px] font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
+          Choose a creator on the left to view messages. New conversations will show up here once you send or receive a message request.
+        </p>
       </div>
     </div>
   );
@@ -138,24 +229,19 @@ function ChatArea({
     }
   });
 
-  const initial = conversation.creatorUsername.replace('@', '').charAt(0).toUpperCase();
-
   return (
     <div className="flex flex-col flex-1 min-w-0 h-full">
       {/* Chat header */}
       <div className="flex items-center justify-between px-[20px] py-[14px] border-b border-[#323339] shrink-0">
         <div className="flex items-center gap-[12px]">
-          <div className="size-[36px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0">
-            <span className="font-['Tahoma',sans-serif] font-[700] text-[14px] text-black">
-              {initial}
-            </span>
-          </div>
+          <PeerAvatar
+            avatarUrl={conversation.creatorAvatar}
+            username={conversation.creatorUsername}
+            variant="header"
+          />
           <span className="font-['Satoshi',sans-serif] font-[700] text-[16px] text-[rgba(255,255,255,0.87)]">
             {conversation.creatorUsername}
           </span>
-          {conversation.status === 'accepted' && (
-            <span className="size-[8px] rounded-full bg-[#4ade80]" />
-          )}
         </div>
         <div className="flex items-center gap-[8px]">
           <button
@@ -186,29 +272,27 @@ function ChatArea({
               </span>
               <div className="flex-1 h-px bg-[#323339]" />
             </div>
-            {group.messages.map((msg) => (
+            {group.messages.map((msg) => {
+              const isMine = msg.from === CURRENT_USER_HANDLE;
+              return (
               <div
                 key={msg.id}
-                className={`flex gap-[10px] ${msg.type === 'sent' ? 'flex-row-reverse' : ''}`}
+                className={`flex gap-[10px] ${isMine ? 'flex-row-reverse' : ''}`}
               >
-                {msg.type === 'received' && (
-                  <div className="size-[32px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center shrink-0 mt-[2px]">
-                    <span className="font-['Tahoma',sans-serif] font-[700] text-[11px] text-black">
-                      {initial}
-                    </span>
-                  </div>
+                {!isMine && (
+                  <PeerAvatar
+                    avatarUrl={conversation.creatorAvatar}
+                    username={conversation.creatorUsername}
+                    variant="message"
+                  />
                 )}
-                {msg.type === 'sent' && (
-                  <div className="size-[32px] rounded-full bg-[rgba(39,39,39,0.87)] flex items-center justify-center shrink-0 mt-[2px]">
-                    <span className="font-['Tahoma',sans-serif] font-[700] text-[11px] text-[rgba(255,255,255,0.6)]">
-                      Y
-                    </span>
-                  </div>
+                {isMine && (
+                  <UserProfileAvatar className="size-[32px] rounded-full object-cover shrink-0 mt-[2px]" />
                 )}
-                <div className={`max-w-[65%] flex flex-col gap-[4px] ${msg.type === 'sent' ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[65%] flex flex-col gap-[4px] ${isMine ? 'items-end' : 'items-start'}`}>
                   <div
                     className={`px-[14px] py-[10px] rounded-[16px] ${
-                      msg.type === 'sent'
+                      isMine
                         ? 'bg-[#2a2a2e] border border-[#3a3a42] rounded-br-[4px]'
                         : 'bg-[#2a2a2e] border border-[#323339] rounded-bl-[4px]'
                     }`}
@@ -224,7 +308,8 @@ function ChatArea({
                   </span>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -273,19 +358,21 @@ function ChatArea({
 }
 
 function UserInfoPanel({ conversation }: { conversation: Conversation }) {
-  const info = conversation.creatorInfo;
-  const initial = conversation.creatorUsername.replace('@', '').charAt(0).toUpperCase();
   const navigate = useNavigate();
+  const profileCreator = creators.find((c) => c.id === conversation.creatorId);
+  const sidebarLinks = getCreatorSidebarLinkEntries(profileCreator);
+  const interestTags = profileCreator?.interestTags ?? [];
+  const localTime = profileCreator?.localTime;
 
   return (
-    <div className="w-[240px] shrink-0 border-l border-[#323339] h-full overflow-y-auto p-[20px] flex flex-col gap-[20px]">
+    <div className="w-[240px] shrink-0 border-l border-[#323339] h-full overflow-y-auto p-[22px] flex flex-col gap-[24px]">
       {/* Avatar & username */}
       <div className="flex flex-col items-center gap-[12px]">
-        <div className="size-[64px] rounded-full bg-gradient-to-br from-[#a5ff5f] to-[#78ffd6] flex items-center justify-center">
-          <span className="font-['Tahoma',sans-serif] font-[700] text-[24px] text-black">
-            {initial}
-          </span>
-        </div>
+        <PeerAvatar
+          avatarUrl={conversation.creatorAvatar}
+          username={conversation.creatorUsername}
+          variant="panel"
+        />
         <span className="font-['Satoshi',sans-serif] font-[700] text-[15px] text-[rgba(255,255,255,0.87)]">
           {conversation.creatorUsername}
         </span>
@@ -297,54 +384,68 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
         </button>
       </div>
 
-      {/* Local time */}
-      {info?.localTime && (
-        <div className="flex items-center gap-[6px]">
-          <MapPin size={13} className="text-[rgba(255,255,255,0.4)]" />
-          <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)]">
-            Local Time {info.localTime}
+      {/* Local time — same field as profile sidebar */}
+      {localTime && (
+        <div className="flex items-center gap-[8px] min-w-0">
+          <Clock size={13} className="text-[rgba(255,255,255,0.4)] shrink-0" strokeWidth={1.5} />
+          <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)] min-w-0">
+            Local time {localTime}
           </span>
         </div>
       )}
 
-      {/* Interests */}
-      {info?.interests && info.interests.length > 0 && (
-        <div className="flex flex-col gap-[8px]">
+      {/* Interests — same tags as profile / creator cards */}
+      {interestTags.length > 0 && (
+        <div className="flex flex-col gap-[10px]">
           <span className="font-['Satoshi',sans-serif] font-[700] text-[12px] text-[rgba(255,255,255,0.5)] uppercase tracking-[0.8px]">
             Interests
           </span>
-          <div className="flex flex-wrap gap-[6px]">
-            {info.interests.map((tag) => (
-              <span
-                key={tag}
-                className="px-[10px] py-[4px] rounded-full bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[11px] text-[rgba(255,255,255,0.6)]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          <InterestTagPillList tags={interestTags} />
         </div>
       )}
 
-      {/* Links */}
-      {info?.links && info.links.length > 0 && (
-        <div className="flex flex-col gap-[8px]">
+      {/* Links — same merge + cap as profile sidebar (socials then portfolio) */}
+      {sidebarLinks.length > 0 && (
+        <div className="flex flex-col gap-[10px]">
           <span className="font-['Satoshi',sans-serif] font-[700] text-[12px] text-[rgba(255,255,255,0.5)] uppercase tracking-[0.8px]">
             Links
           </span>
-          <div className="flex flex-col gap-[6px]">
-            {info.links.map((link) => (
-              <a
-                key={link.platform}
-                href={link.url}
-                className="flex items-center gap-[8px] text-[rgba(255,255,255,0.5)] hover:text-[#a5ff5f] transition-colors group"
-              >
-                <ExternalLink size={12} className="shrink-0" />
-                <span className="font-['Satoshi',sans-serif] font-[500] text-[12px] group-hover:text-[#a5ff5f]">
-                  {link.platform}
-                </span>
-              </a>
-            ))}
+          <div className="flex flex-col gap-[8px] w-full min-w-0">
+            {sidebarLinks.map((entry) =>
+              entry.kind === 'social' ? (
+                <a
+                  key={`social-${entry.social.platform}-${entry.social.handle}`}
+                  href={entry.social.url}
+                  onClick={(e) => e.preventDefault()}
+                  title={`${entry.social.platform}: ${entry.social.handle}`}
+                  className="flex gap-[8px] items-center min-h-[38px] px-[8px] py-[5px] rounded-[8px] bg-[#2a2a2e] hover:bg-[#323339] transition-colors cursor-pointer min-w-0"
+                >
+                  <span className="size-[28px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
+                    <LinkPlatformIcon platform={entry.social.platform} className="size-[16px]" />
+                  </span>
+                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.87)] truncate">
+                    {entry.social.handle}
+                  </span>
+                  <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
+                </a>
+              ) : (
+                <a
+                  key={`portfolio-${entry.link.platform}-${entry.idx}`}
+                  href={entry.link.url}
+                  onClick={(e) => e.preventDefault()}
+                  title={entry.link.platform}
+                  className="flex gap-[8px] items-center min-h-[38px] px-[8px] py-[5px] rounded-[8px] bg-[#2a2a2e] hover:bg-[#323339] transition-colors cursor-pointer min-w-0"
+                >
+                  <span className="size-[28px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
+                    <LinkPlatformIcon platform={entry.link.platform} className="size-[16px]" />
+                  </span>
+                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.87)] truncate">
+                    {entry.link.platform}
+                  </span>
+                  <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
+                </a>
+              )
+            )}
           </div>
         </div>
       )}
@@ -360,12 +461,14 @@ export function ChatPage() {
   const [search, setSearch] = useState('');
   const [showInfoPanel, setShowInfoPanel] = useState(false);
 
-  const activeConv = conversations.find((c) => c.id === conversationId) || conversations[0];
+  const activeConv = useMemo(
+    () => conversations.find((c) => c.id === conversationId),
+    [conversations, conversationId]
+  );
 
   useEffect(() => {
-    if (!conversationId && conversations.length > 0) {
-      navigate(`/chat/${conversations[0].id}`, { replace: true });
-    }
+    // Preserve route behavior: only auto-navigate when no conversationId is provided.
+    if (!conversationId && conversations.length > 0) navigate(`/chat/${conversations[0].id}`, { replace: true });
   }, [conversationId, conversations, navigate]);
 
   const handleSend = () => {
@@ -381,16 +484,21 @@ export function ChatPage() {
 
   if (!activeConv) {
     return (
-      <div className="flex items-center justify-center h-[400px]">
-        <p className="font-['Satoshi',sans-serif] text-[rgba(255,255,255,0.6)] text-[16px]">
-          No conversations yet
-        </p>
+      <div className="flex h-[calc(100vh-82px-80px)] w-full bg-[#0e0c13] rounded-[16px] border border-[#323339] overflow-hidden">
+        <ConversationList
+          conversations={conversations}
+          activeId={undefined}
+          onSelect={handleSelectConversation}
+          search={search}
+          onSearchChange={setSearch}
+        />
+        <ChatEmptyState />
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-82px-80px)] w-full bg-[#0e0c13] rounded-[8px] border border-[#323339] overflow-hidden">
+    <div className="flex h-[calc(100vh-82px-80px)] w-full bg-[#0e0c13] rounded-[16px] border border-[#323339] overflow-hidden">
       <ConversationList
         conversations={conversations}
         activeId={activeConv.id}

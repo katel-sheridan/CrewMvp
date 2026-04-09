@@ -101,14 +101,14 @@ export function FilterBar({
 
   return (
     <div className="flex items-center justify-between w-full flex-wrap gap-[12px]">
-      <div className="flex gap-[12px] items-center flex-wrap">
+      <div className="flex gap-[16px] items-center flex-wrap">
         <Dropdown label="Payment Type" options={paymentOptions} value={paymentType} onChange={onPaymentChange} />
         <Dropdown label="Duration of Collab" options={durationOptions} value={duration} onChange={onDurationChange} />
         {showAvailability && (
           <Dropdown label="Availability" options={availabilityOptions} value={availability} onChange={onAvailabilityChange} />
         )}
       </div>
-      <div className="relative flex gap-[4px] items-center text-[rgba(255,255,255,0.87)] cursor-pointer" ref={sortRef} onClick={() => setSortOpen(!sortOpen)}>
+      <div className="relative flex gap-[4px] items-center justify-end text-[rgba(255,255,255,0.87)] cursor-pointer pl-[8px] pr-[6px]" ref={sortRef} onClick={() => setSortOpen(!sortOpen)}>
         <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] leading-[1.4]">Sort by:</span>
         <span className="font-['Satoshi',sans-serif] font-[500] text-[14px] leading-[1.4]">{sortBy}</span>
         <ChevronDown size={14} className="text-[rgba(255,255,255,0.87)]" />

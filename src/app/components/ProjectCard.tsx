@@ -25,7 +25,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
   const displayDescription = truncateToTwoSentences(project.description);
 
   return (
-    <div className="bg-[#212226] rounded-[16px] flex h-[258px] items-center w-full overflow-hidden cursor-pointer group transition-all hover:ring-1 hover:ring-[#323339]" onClick={onClick}>
+    <div className="bg-[#212226] rounded-[16px] flex h-[262px] items-center w-full overflow-hidden cursor-pointer group transition-all hover:ring-1 hover:ring-[#323339]" onClick={onClick}>
       {/* Thumbnail */}
       <div className="relative flex-1 h-full min-w-0">
         <div className="absolute inset-0 bg-[rgba(255,255,255,0.12)]" />
@@ -33,17 +33,17 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       </div>
 
       {/* Info */}
-      <div className="w-[714px] shrink-0 h-full flex flex-col justify-center px-[20px] py-[24px] gap-[12px]">
+      <div className="w-[714px] shrink-0 h-full flex flex-col justify-center px-[20px] py-[16px] gap-[12px]">
         {/* Tags row */}
         <div className="flex items-center justify-between w-full">
           <div className="flex gap-[6px] items-start">
             {project.tags.map((tag) => (
               <span
                 key={tag.label}
-                className={`flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-center whitespace-nowrap ${
+                className={`flex h-[24px] items-center justify-center px-[8px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-center whitespace-nowrap ${
                   tag.type === 'featured'
-                    ? 'bg-gradient-to-r from-[#a8ff78] to-[#78ffd6] text-black'
-                    : 'border border-[#323339] text-[rgba(255,255,255,0.87)]'
+                    ? 'bg-[#a5ff5f] text-black'
+                    : 'bg-[rgba(39,39,39,0.87)] border border-[#323339] text-[rgba(255,255,255,0.87)]'
                 }`}
               >
                 {tag.label}
@@ -52,13 +52,13 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
           <div className="flex gap-[12px] items-center">
             {project.deadlineDays && (
-              <span className="bg-[#352a17] border border-[#614e2d] flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(236,215,178,0.87)] text-center whitespace-nowrap">
+              <span className="bg-[#352a17] border border-[#614e2d] flex h-[24px] items-center justify-center px-[8px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(236,215,178,0.87)] text-center whitespace-nowrap">
                 Deadline in {project.deadlineDays} days
               </span>
             )}
             <button
               onClick={(e) => { e.stopPropagation(); toggleSaveProject(project.id); }}
-              className="flex items-center justify-center size-[40px] rounded-full border-[0.75px] border-[#323339] cursor-pointer transition-colors hover:bg-[#2a2a2e]"
+              className="flex items-center justify-center size-[40px] rounded-full border border-[rgba(39,39,39,0.87)] cursor-pointer transition-colors hover:bg-[#2a2a2e]"
             >
               <Bookmark size={14} className={saved ? 'fill-[#B4FF79] text-[#B4FF79]' : 'text-[#B4FF79]'} strokeWidth={1.5} />
             </button>
@@ -83,10 +83,10 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
 
         {/* Looking for */}
         <div className="flex flex-col gap-[8px]">
-          <span className="font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.6)]">Looking for...</span>
+          <span className="font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.38)]">LOOKING FOR</span>
           <div className="flex gap-[6px]">
             {project.lookingFor.map((role) => (
-              <span key={role} className="flex h-[24px] items-center justify-center px-[12px] py-[4px] rounded-[12px] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] text-center whitespace-nowrap">
+              <span key={role} className="flex h-[24px] items-center justify-center px-[8px] py-[4px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] text-center whitespace-nowrap">
                 {role}
               </span>
             ))}
