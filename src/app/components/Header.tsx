@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
+import { useSidebarNav } from '../context/SidebarNavContext';
 import svgPaths from '../../imports/svg-xv82cnj567';
 import { useMessaging } from '../context/MessagingContext';
 import { UserProfileAvatar } from './UserProfileAvatar';
@@ -77,6 +78,7 @@ export function Header() {
   const notifRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { notifications, unreadCount, markNotificationRead, conversations } = useMessaging();
+  const sidebarNav = useSidebarNav();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -92,7 +94,20 @@ export function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0e0c13] flex items-center h-[82px] px-[16px] sm:px-[28px] gap-[16px] sm:gap-[32px]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0e0c13] flex items-center h-[82px] px-[16px] sm:px-[28px] gap-[12px] sm:gap-[20px] min-w-0">
+      {sidebarNav && (
+        <button
+          type="button"
+          onClick={sidebarNav.toggle}
+          className="lg:hidden shrink-0 size-[40px] rounded-[8px] bg-[#212226] border border-[#323339] flex items-center justify-center cursor-pointer text-[rgba(255,255,255,0.87)]"
+          aria-label={sidebarNav.open ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={sidebarNav.open}
+          aria-controls="app-sidebar"
+        >
+          {sidebarNav.open ? <X size={20} strokeWidth={1.75} /> : <Menu size={20} strokeWidth={1.75} />}
+        </button>
+      )}
+
       {/* Logo */}
       <div
         className="shrink-0 cursor-pointer h-[38px] w-[45.21px] relative"
@@ -155,7 +170,7 @@ export function Header() {
 
       {/* Search */}
       <div className="flex-1 flex justify-center min-w-0">
-        <div className="bg-[#212226] flex gap-[8px] h-[38px] items-center px-[16px] py-[12px] rounded-[30px] w-full max-w-[468px] border-b border-[#323339]">
+        <div className="bg-[#212226] flex gap-[8px] h-[38px] items-center px-[12px] sm:px-[16px] py-[12px] rounded-[30px] w-full max-w-[468px] border-b border-[#323339] min-w-0">
           <HeaderSearchIcon />
           <input
             type="text"
@@ -166,18 +181,18 @@ export function Header() {
       </div>
 
       {/* Right actions */}
-      <div className="flex gap-[16px] items-center shrink-0">
+      <div className="flex gap-[8px] sm:gap-[16px] items-center shrink-0">
         {/* Post button */}
         <div className="relative" ref={dropdownRef}>
           <button
-            className="bg-[#a5ff5f] flex gap-[4px] h-[40px] items-center justify-center px-[16px] py-[8px] rounded-[8px] border-2 border-[#a5ff5f] cursor-pointer"
+            className="bg-[#a5ff5f] flex gap-[4px] h-[40px] items-center justify-center px-[10px] sm:px-[16px] py-[8px] rounded-[8px] border-2 border-[#a5ff5f] cursor-pointer"
             onClick={() => setPostOpen(!postOpen)}
           >
-            <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-black leading-[1.4] whitespace-nowrap">Post</span>
-            <ChevronDown size={20} className="text-black" />
+            <span className="font-['Satoshi',sans-serif] font-[700] text-[13px] sm:text-[14px] text-black leading-[1.4] whitespace-nowrap">Post</span>
+            <ChevronDown size={20} className="text-black hidden sm:block shrink-0" />
           </button>
           {postOpen && (
-            <div className="absolute top-[48px] right-0 bg-[#212226] border border-[#323339] rounded-[8px] shadow-lg z-50 min-w-[200px] overflow-hidden">
+            <div className="absolute top-[48px] right-0 bg-[#212226] border border-[#323339] rounded-[8px] shadow-lg z-50 min-w-[200px] w-[min(280px,calc(100vw-24px))] overflow-hidden">
               <button
                 className="w-full text-left px-[16px] py-[12px] font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.87)] hover:bg-[#2a2a2e] cursor-pointer transition-colors"
                 onClick={() => setPostOpen(false)}
@@ -222,7 +237,7 @@ export function Header() {
 
           {/* Notification dropdown */}
           {notifOpen && (
-            <div className="absolute top-[40px] right-0 bg-[#212226] border border-[#323339] rounded-[12px] shadow-2xl z-50 w-[360px] overflow-hidden">
+            <div className="absolute top-[40px] right-0 bg-[#212226] border border-[#323339] rounded-[12px] shadow-2xl z-50 w-[min(360px,calc(100vw-24px))] max-w-[360px] overflow-hidden">
               <div className="px-[20px] py-[14px] border-b border-[#323339]">
                 <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)]">
                   Notifications
@@ -254,10 +269,10 @@ export function Header() {
                         notif.read ? 'bg-transparent' : 'bg-[#a5ff5f]'
                       }`} />
                       <div className="flex flex-col gap-[4px] min-w-0">
-                        <p className="font-['Satoshi',sans-serif] font-[600] text-[13px] text-[rgba(255,255,255,0.87)] leading-[1.4]">
+                        <p className="font-['Satoshi',sans-serif] font-[600] text-[14px] text-[rgba(255,255,255,0.87)] leading-[1.4]">
                           {notif.title}
                         </p>
-                        <p className="font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.5)] leading-[1.4]">
+                        <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.5)] leading-[1.4]">
                           {notif.description}
                         </p>
                         <p className="font-['Satoshi',sans-serif] font-[400] text-[11px] text-[rgba(255,255,255,0.3)]">

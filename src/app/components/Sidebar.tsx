@@ -7,18 +7,27 @@ const navItems = [
   { label: 'Applications', icon: Folder, path: '/applications' },
 ];
 
-export function Sidebar() {
+type SidebarProps = {
+  /** Called after navigation (e.g. close mobile drawer). */
+  onNavigate?: () => void;
+};
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <nav className="fixed top-[82px] left-0 w-[216px] h-[calc(100vh-82px)] bg-[#0e0c13] flex flex-col items-start px-[12px] py-[32px] overflow-y-auto z-40">
+    <nav className="h-full w-full flex flex-col items-stretch px-[12px] py-[24px] sm:py-[32px] overflow-y-auto overflow-x-hidden border-r border-[#323339]/80 lg:border-r-0">
       {navItems.map((item) => {
         const isActive = location.pathname === item.path;
         return (
           <button
             key={item.label}
-            onClick={() => navigate(item.path)}
+            type="button"
+            onClick={() => {
+              navigate(item.path);
+              onNavigate?.();
+            }}
             className={`flex h-[48px] items-center w-full rounded-[100px] overflow-hidden cursor-pointer transition-colors ${
               isActive ? 'bg-[#212226]' : 'hover:bg-[#212226]/50'
             }`}

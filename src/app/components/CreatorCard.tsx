@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Bookmark, Play, Pause } from 'lucide-react';
 import type { Creator } from '../data/mock-data';
 import { useSavedItems } from '../context/SavedItemsContext';
 import { InterestTagPillCompactList } from './InterestTagPill';
@@ -14,14 +14,48 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
   const { isCreatorSaved, toggleSaveCreator } = useSavedItems();
   const saved = isCreatorSaved(creator.id);
 
+  const hasVideo = creator.videoShowcase && creator.videoShowcase.length > 0;
+  const hasAudio = creator.audioShowcase && creator.audioShowcase.length > 0;
+  const carouselImages = hasVideo
+    ? creator.videoShowcase!.map((v) => `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`)
+    : hasAudio
+      ? creator.audioShowcase!.map((t) => t.thumbnail)
+      : creator.portfolioImages;
+
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+
+  const toggleVideo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setVideoPlaying((prev) => !prev);
+  };
+
+  const toggleAudio = (e: React.MouseEvent, idx: number) => {
+    e.stopPropagation();
+    const audio = audioRef.current;
+    if (!audio || !hasAudio) return;
+    const track = creator.audioShowcase![idx];
+    if (playingIndex === idx) {
+      audio.pause();
+      setPlayingIndex(null);
+    } else {
+      audio.src = track.audioSrc;
+      audio.play();
+      setPlayingIndex(idx);
+    }
+  };
+
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImage((prev) => (prev === 0 ? creator.portfolioImages.length - 1 : prev - 1));
+    setVideoPlaying(false);
+    setCurrentImage((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
   };
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImage((prev) => (prev === creator.portfolioImages.length - 1 ? 0 : prev + 1));
+    setVideoPlaying(false);
+    setCurrentImage((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -31,35 +65,73 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
     >
       {/* Image Carousel */}
       <div className="relative w-full aspect-[4/3] overflow-hidden">
-        {creator.portfolioImages.map((img, i) => (
-          <img
-            key={i}
-            alt={`${creator.username} portfolio ${i + 1}`}
-            className={`absolute inset-0 size-full object-cover transition-opacity duration-300 ${
-              i === currentImage ? 'opacity-100' : 'opacity-0'
-            }`}
-            src={img}
-          />
-        ))}
+        {hasAudio && <audio ref={audioRef} preload="metadata" onEnded={() => setPlayingIndex(null)} />}
 
-        {/* Skill tags — top left of image (work-related: Illustration, Hobby, etc.) */}
-        <div className="absolute top-[12px] left-[12px] flex gap-[6px] flex-wrap max-w-[70%] z-10">
-          {creator.skillTags.map((tag) => (
-            <span
-              key={tag}
-              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
-            >
-              {tag}
-            </span>
-          ))}
-          {creator.duration && creator.duration !== 'Any' && (
-            <span
-              className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
-            >
-              {creator.duration}
-            </span>
-          )}
-        </div>
+        {hasVideo && videoPlaying ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${creator.videoShowcase![currentImage].youtubeId}?autoplay=1`}
+            title={creator.videoShowcase![currentImage].title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 size-full z-[5]"
+          />
+        ) : (
+          carouselImages.map((img, i) => (
+            <img
+              key={i}
+              alt={`${creator.username} portfolio ${i + 1}`}
+              className={`absolute inset-0 size-full object-cover transition-opacity duration-300 ${
+                i === currentImage ? 'opacity-100' : 'opacity-0'
+              }`}
+              src={img}
+            />
+          ))
+        )}
+
+        {/* Skill tags — top left of image */}
+        {!videoPlaying && (
+          <div className="absolute top-[12px] left-[12px] flex gap-[6px] flex-wrap max-w-[70%] z-10">
+            {creator.skillTags.map((tag) => (
+              <span
+                key={tag}
+                className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
+              >
+                {tag}
+              </span>
+            ))}
+            {creator.duration && creator.duration !== 'Any' && (
+              <span
+                className="flex h-[22px] items-center px-[10px] rounded-[12px] bg-[rgba(39,39,39,0.87)] border border-[#323339] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(255,255,255,0.87)] whitespace-nowrap"
+              >
+                {creator.duration}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Video play button */}
+        {hasVideo && !videoPlaying && (
+          <button
+            onClick={toggleVideo}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[44px] rounded-full bg-[rgba(0,0,0,0.6)] backdrop-blur-sm flex items-center justify-center cursor-pointer shadow-lg hover:bg-[rgba(0,0,0,0.75)] transition-colors z-10"
+          >
+            <Play size={20} className="fill-white text-white ml-[2px]" />
+          </button>
+        )}
+
+        {/* Audio play/pause button */}
+        {hasAudio && !hasVideo && (
+          <button
+            onClick={(e) => toggleAudio(e, currentImage)}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[44px] rounded-full bg-[rgba(0,0,0,0.6)] backdrop-blur-sm flex items-center justify-center cursor-pointer shadow-lg hover:bg-[rgba(0,0,0,0.75)] transition-colors z-10"
+          >
+            {playingIndex === currentImage ? (
+              <Pause size={20} className="fill-white text-white" />
+            ) : (
+              <Play size={20} className="fill-white text-white ml-[2px]" />
+            )}
+          </button>
+        )}
 
         {/* Carousel arrows */}
         <button
@@ -77,7 +149,7 @@ export function CreatorCard({ creator, onClick }: CreatorCardProps) {
 
         {/* Dots */}
         <div className="absolute bottom-[8px] left-1/2 -translate-x-1/2 flex gap-[4px]">
-          {creator.portfolioImages.map((_, i) => (
+          {carouselImages.map((_, i) => (
             <div
               key={i}
               className={`size-[6px] rounded-full transition-colors ${

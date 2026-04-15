@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Grid2x2, Palette, PenLine, Monitor, Mic, Music, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Grid2x2, Palette, PenLine, Monitor, Mic, Music, Box, ChevronLeft, ChevronRight } from 'lucide-react';
 import { categories } from '../data/mock-data';
 import imgAll from "../../assets/categories/all.png";
 import imgIllustration from "../../assets/categories/illustration.png";
@@ -7,6 +7,7 @@ import imgWriting from "../../assets/categories/writing.png";
 import imgDevelopment from "../../assets/categories/development.png";
 import imgVoiceActing from "../../assets/categories/voice-acting.png";
 import imgComposing from "../../assets/categories/composing.png";
+import img3dModelling from "../../assets/categories/3d-modelling.png";
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
   grid: Grid2x2,
@@ -15,6 +16,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
   computer: Monitor,
   mic: Mic,
   music: Music,
+  box: Box,
 };
 
 const bgImages: Record<string, string> = {
@@ -24,6 +26,7 @@ const bgImages: Record<string, string> = {
   development: imgDevelopment,
   'voice-acting': imgVoiceActing,
   composing: imgComposing,
+  '3d-modelling': img3dModelling,
 };
 
 interface CategoryFilterProps {
@@ -70,10 +73,10 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
 
   return (
     <div className="flex flex-col gap-[8px] items-start w-full">
-      <h1 className="font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[40px] text-[rgba(255,255,255,0.87)]">
+      <h1 className="font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[28px] sm:text-[34px] lg:text-[40px] text-[rgba(255,255,255,0.87)] max-w-[100%]">
         Explore creatives around you.
       </h1>
-      <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[20px] text-[rgba(255,255,255,0.6)]">
+      <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[16px] sm:text-[18px] lg:text-[20px] text-[rgba(255,255,255,0.6)] max-w-[100%]">
         Find projects to join, or cool people to vibe with.
       </p>
       <div className="relative w-full mt-[40px]">
@@ -91,7 +94,7 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
         {showLeftChevron && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
+            className="absolute left-0 sm:left-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[36px] sm:size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
           >
             <ChevronLeft size={20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={2} />
           </button>
@@ -101,7 +104,7 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
         {showRightChevron && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
+            className="absolute right-0 sm:right-[-20px] top-1/2 -translate-y-1/2 z-20 bg-[#212226] border border-[#323339] size-[36px] sm:size-[40px] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-[#2a2a2e] transition-colors"
           >
             <ChevronRight size={20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={2} />
           </button>
@@ -135,7 +138,7 @@ export function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
                   <div className="absolute border-2 border-[#a5ff5f] inset-0 pointer-events-none rounded-[16px]" />
                 )}
                 <div className="flex flex-col gap-[8px] items-center relative z-10">
-                  {Icon && <Icon size={cat.icon === 'computer' ? 28 : cat.icon === 'palette' || cat.icon === 'mic' || cat.icon === 'music' ? 24 : 20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={1.5} />}
+                  {Icon && <Icon size={cat.icon === 'computer' ? 28 : cat.icon === 'palette' || cat.icon === 'mic' || cat.icon === 'music' || cat.icon === 'box' ? 24 : 20} className="text-[rgba(255,255,255,0.87)]" strokeWidth={1.5} />}
                   <span className="font-['Satoshi',sans-serif] font-[700] leading-[1.1] text-[18px] text-[rgba(255,255,255,0.87)] text-center whitespace-nowrap">
                     {cat.label}
                   </span>

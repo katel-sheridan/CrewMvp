@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Bookmark, Clock, Globe, Eye, ChevronDown, ExternalLink, User } from 'lucide-react';
+import { ArrowLeft, Bookmark, Clock, Globe, Eye, ChevronDown, ExternalLink, User, Sparkles, Play, Pause } from 'lucide-react';
 import { creators, projects, getCreatorAvatarByUsername, getCreatorIdByUsername, getCreatorSidebarLinkEntries } from '../data/mock-data';
 import { useSavedItems } from '../context/SavedItemsContext';
 import { ShowcaseLightbox } from './ShowcaseLightbox';
@@ -8,6 +8,93 @@ import { MessageRequestModal } from './MessageRequestModal';
 import { ProjectDetailModal } from './ProjectDetailModal';
 import { LinkPlatformIcon } from './LinkPlatformIcon';
 import { InterestTagPillList } from './InterestTagPill';
+
+function AudioShowcaseCard({ track }: { track: { title: string; thumbnail: string; audioSrc: string } }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTime = () => setProgress(audio.currentTime);
+    const onMeta = () => setDuration(audio.duration);
+    const onEnd = () => { setPlaying(false); setProgress(0); };
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('loadedmetadata', onMeta);
+    audio.addEventListener('ended', onEnd);
+    return () => {
+      audio.removeEventListener('timeupdate', onTime);
+      audio.removeEventListener('loadedmetadata', onMeta);
+      audio.removeEventListener('ended', onEnd);
+    };
+  }, []);
+
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) { audio.pause(); } else { audio.play(); }
+    setPlaying(!playing);
+  };
+
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.currentTime = ratio * duration;
+    setProgress(audio.currentTime);
+  };
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="flex items-center gap-[14px] bg-[#212226] border border-[#323339] rounded-[12px] p-[12px] group hover:bg-[#2a2a2e] transition-colors">
+      <audio ref={audioRef} src={track.audioSrc} preload="metadata" />
+      <div className="size-[56px] rounded-[8px] overflow-hidden shrink-0 relative">
+        <img
+          src={track.thumbnail}
+          alt={track.title}
+          className="size-full object-cover"
+        />
+      </div>
+      <button
+        onClick={toggle}
+        className="size-[36px] rounded-full bg-[#a5ff5f] flex items-center justify-center cursor-pointer shrink-0 hover:bg-[#8de649] transition-colors"
+      >
+        {playing ? (
+          <Pause size={16} className="text-black" strokeWidth={2.5} />
+        ) : (
+          <Play size={16} className="text-black ml-[1px]" strokeWidth={2.5} />
+        )}
+      </button>
+      <div className="flex flex-col gap-[6px] flex-1 min-w-0">
+        <span className="font-['Satoshi',sans-serif] font-[700] text-[15px] text-[rgba(255,255,255,0.87)] leading-[1.2] truncate">
+          {track.title}
+        </span>
+        <div className="flex items-center gap-[10px]">
+          <div
+            className="flex-1 h-[4px] bg-[#323339] rounded-full cursor-pointer relative"
+            onClick={seek}
+          >
+            <div
+              className="absolute top-0 left-0 h-full bg-[#a5ff5f] rounded-full transition-[width] duration-100"
+              style={{ width: duration ? `${(progress / duration) * 100}%` : '0%' }}
+            />
+          </div>
+          <span className="font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.4)] shrink-0 tabular-nums">
+            {fmt(progress)}{duration ? ` / ${fmt(duration)}` : ''}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function CreatorProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +120,7 @@ export function CreatorProfilePage() {
           <h2 className="font-['Tahoma',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
             Creator not found
           </h2>
-          <p className="mt-[8px] font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
+          <p className="mt-[8px] font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
             This profile may have been removed or the link is incorrect.
           </p>
           <button
@@ -73,9 +160,9 @@ export function CreatorProfilePage() {
       </button>
 
       {/* Main layout */}
-      <div className="flex gap-[40px] items-start w-full">
+      <div className="flex flex-col lg:flex-row gap-[28px] lg:gap-[40px] items-stretch lg:items-start w-full min-w-0">
         {/* Left sidebar */}
-        <div className="flex flex-col gap-[20px] w-[280px] shrink-0 sticky top-[106px]">
+        <div className="flex flex-col gap-[20px] w-full max-w-[480px] mx-auto lg:mx-0 lg:w-[280px] shrink-0 lg:sticky lg:top-[106px]">
           {/* Profile Card */}
           <div className="flex flex-col gap-[20px] items-center bg-[#212226] border border-[#323339] rounded-[16px] p-[28px] overflow-hidden">
             {/* Banner + avatar (Discord-style) */}
@@ -158,7 +245,7 @@ export function CreatorProfilePage() {
                 </span>
                 <div className="flex gap-[10px] items-center">
                   <Clock size={14} className="text-[rgba(255,255,255,0.4)] shrink-0" strokeWidth={1.5} />
-                  <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.6)]">
+                  <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.6)]">
                     {creator.localTime}
                   </span>
                 </div>
@@ -169,7 +256,7 @@ export function CreatorProfilePage() {
                 </span>
                 <div className="flex gap-[10px] items-center">
                   <Globe size={14} className="text-[rgba(255,255,255,0.4)] shrink-0" strokeWidth={1.5} />
-                  <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.6)]">
+                  <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.6)]">
                     {creator.languages.join(' / ')}
                   </span>
                 </div>
@@ -181,7 +268,7 @@ export function CreatorProfilePage() {
                 <div className="flex gap-[10px] items-center">
                   <Eye size={14} className="text-[rgba(255,255,255,0.4)] shrink-0" strokeWidth={1.5} />
                   <span
-                    className={`font-['Satoshi',sans-serif] font-[400] text-[13px] ${
+                    className={`font-['Satoshi',sans-serif] font-[400] text-[14px] ${
                       creator.lastSeen === 'Online now' ? 'text-[#4ade80]' : 'text-[rgba(255,255,255,0.6)]'
                     }`}
                   >
@@ -213,7 +300,7 @@ export function CreatorProfilePage() {
                           <span className="size-[32px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
                             <LinkPlatformIcon platform={entry.social.platform} className="size-[18px]" />
                           </span>
-                          <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.87)] truncate">
+                          <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.87)] truncate">
                             {entry.social.handle}
                           </span>
                           <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
@@ -229,7 +316,7 @@ export function CreatorProfilePage() {
                           <span className="size-[32px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
                             <LinkPlatformIcon platform={entry.link.platform} className="size-[18px]" />
                           </span>
-                          <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.87)] truncate">
+                          <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.87)] truncate">
                             {entry.link.platform}
                           </span>
                           <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
@@ -257,18 +344,18 @@ export function CreatorProfilePage() {
         <div className="flex-1 flex flex-col gap-[36px] min-w-0">
           {/* Collab status banner */}
           {isOpen && (
-            <div className="flex gap-[16px] items-center px-[20px] py-[16px] rounded-[12px] bg-[rgba(74,222,128,0.06)] border border-[rgba(74,222,128,0.2)]">
-              <div className="size-[8px] rounded-full bg-[#4ade80] shrink-0 shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse" />
-              <div className="flex-1">
-                <p className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[#4ade80]">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[12px] px-[20px] sm:px-[24px] py-[18px] rounded-[12px] bg-[#a5ff5f]">
+              <div className="flex items-center gap-[10px] min-w-0">
+                <Sparkles size={18} className="text-black shrink-0" strokeWidth={2} />
+                <span className="font-['Satoshi',sans-serif] font-[700] text-[18px] sm:text-[20px] text-black leading-[1.1]">
                   Open to Collaborations
-                </p>
-                <p className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)] leading-[1.4]">
-                  {creator.maxProjects != null
-                    ? `Accepting up to ${creator.maxProjects} project${creator.maxProjects === 1 ? '' : 's'}`
-                    : 'Send a message request to discuss timing and scope.'}
-                </p>
+                </span>
               </div>
+              <span className="font-['Satoshi',sans-serif] font-[500] text-[14px] text-[rgba(0,0,0,0.55)] shrink-0 sm:text-right">
+                {creator.maxProjects != null
+                  ? `Accepting up to ${creator.maxProjects} project${creator.maxProjects === 1 ? '' : 's'}`
+                  : 'Message to discuss scope'}
+              </span>
             </div>
           )}
 
@@ -279,7 +366,7 @@ export function CreatorProfilePage() {
                 <p className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.5)]">
                   Closed for Collaborations
                 </p>
-                <p className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.4)] leading-[1.4]">
+                <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.4)] leading-[1.4]">
                   This creator is not currently accepting new projects.
                 </p>
               </div>
@@ -288,54 +375,81 @@ export function CreatorProfilePage() {
 
           {/* About Me */}
           <div className="flex flex-col gap-[20px] bg-[#212226] border border-[#323339] rounded-[16px] p-[28px]">
-            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[22px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               About Me
             </h2>
-            <p className="font-['Satoshi',sans-serif] font-[400] text-[15px] text-[rgba(255,255,255,0.7)] leading-[1.6]">
+            <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.7)] leading-[1.6] whitespace-pre-line">
               {creator.aboutMe}
             </p>
           </div>
 
           {/* Showcase */}
           <div className="flex flex-col gap-[20px]">
-            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[22px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               Showcase
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-[14px]">
-              {creator.showcaseImages.length === 0 ? (
-                <div className="col-span-full bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
-                  <p className="font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.6)]">
-                    No showcase items yet.
-                  </p>
-                </div>
-              ) : (
-                creator.showcaseImages.map((img, i) => (
-                  <div
-                    key={i}
-                    onClick={() => {
-                      setLightboxIndex(i);
-                      setLightboxOpen(true);
-                    }}
-                    className="aspect-square rounded-[8px] overflow-hidden bg-[#212226] group cursor-pointer relative"
-                  >
-                    <img
-                      alt={`Showcase ${i + 1}`}
-                      src={img}
-                      className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-[8px]" />
+            {creator.videoShowcase && creator.videoShowcase.length > 0 ? (
+              <div className="flex flex-col gap-[14px]">
+                {creator.videoShowcase.map((video, i) => (
+                  <div key={i} className="flex flex-col gap-[10px]">
+                    <div className="relative w-full aspect-video rounded-[12px] overflow-hidden bg-[#212226] border border-[#323339]">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
+                        title={video.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute inset-0 size-full"
+                      />
+                    </div>
+                    <span className="font-['Satoshi',sans-serif] font-[600] text-[15px] text-[rgba(255,255,255,0.7)]">
+                      {video.title}
+                    </span>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : creator.audioShowcase && creator.audioShowcase.length > 0 ? (
+              <div className="flex flex-col gap-[10px]">
+                {creator.audioShowcase.map((track, i) => (
+                  <AudioShowcaseCard key={i} track={track} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-[14px]">
+                {creator.showcaseImages.length === 0 ? (
+                  <div className="col-span-full bg-[#212226] border border-[#323339] rounded-[16px] p-[24px]">
+                    <p className="font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.6)]">
+                      No showcase items yet.
+                    </p>
+                  </div>
+                ) : (
+                  creator.showcaseImages.map((img, i) => (
+                    <div
+                      key={i}
+                      onClick={() => {
+                        setLightboxIndex(i);
+                        setLightboxOpen(true);
+                      }}
+                      className="aspect-square rounded-[8px] overflow-hidden bg-[#212226] group cursor-pointer relative"
+                    >
+                      <img
+                        alt={`Showcase ${i + 1}`}
+                        src={img}
+                        className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-[8px]" />
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           {/* My Collaboration Style — below showcase; work-style tags match homepage pills */}
           <div className="flex flex-col gap-[20px] bg-[#212226] border border-[#323339] rounded-[16px] p-[28px]">
-            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+            <h2 className="font-['Satoshi',sans-serif] font-[700] text-[22px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
               My Collaboration Style
             </h2>
-            <p className="font-['Satoshi',sans-serif] font-[400] text-[15px] text-[rgba(255,255,255,0.7)] leading-[1.6]">
+            <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.7)] leading-[1.6]">
               {creator.collabVoice}
             </p>
             {collabStyleTags.length > 0 && (
@@ -355,7 +469,7 @@ export function CreatorProfilePage() {
           {/* Recent Collaborations */}
           {creator.recentCollabs.length > 0 && (
             <div className="flex flex-col gap-[20px]">
-              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[22px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 Recent Collaborations
               </h2>
               <div className="flex flex-col gap-[14px]">
@@ -386,14 +500,14 @@ export function CreatorProfilePage() {
                         />
                       </div>
                       <div className="flex flex-col gap-[4px] flex-1 min-w-0">
-                        <span className="font-['Satoshi',sans-serif] font-[700] text-[15px] text-[rgba(255,255,255,0.87)]">
+                        <span className="font-['Satoshi',sans-serif] font-[700] text-[16px] text-[rgba(255,255,255,0.87)]">
                           {collab.title}
                         </span>
-                        <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)]">
+                        <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.5)]">
                           Role: {collab.role}
                         </span>
                         <div className="flex gap-[4px] items-center">
-                          <span className="font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.4)]">
+                          <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.4)]">
                             with {collab.collaborators.join(', ')}
                           </span>
                         </div>
@@ -417,7 +531,7 @@ export function CreatorProfilePage() {
           {/* Testimonials / Recommendations */}
           {creator.testimonials.length > 0 && (
             <div className="flex flex-col gap-[20px]">
-              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[20px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
+              <h2 className="font-['Satoshi',sans-serif] font-[700] text-[22px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
                 Recommendations
               </h2>
               <div className="flex flex-col gap-[14px]">
@@ -444,7 +558,7 @@ export function CreatorProfilePage() {
                         <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)]">
                           {t.author}
                         </span>
-                        <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
+                        <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
                           "{t.text}"
                         </p>
                       </div>
@@ -471,7 +585,7 @@ export function CreatorProfilePage() {
                   onClick={() => setShowAllTestimonials(!showAllTestimonials)}
                   className="flex gap-[6px] items-center justify-center h-[36px] text-[#a5ff5f] cursor-pointer hover:text-[#8de649] transition-colors"
                 >
-                  <span className="font-['Satoshi',sans-serif] font-[500] text-[13px]">
+                  <span className="font-['Satoshi',sans-serif] font-[500] text-[14px]">
                     {showAllTestimonials ? 'Show less' : `Show all ${creator.testimonials.length} recommendations`}
                   </span>
                   <ChevronDown

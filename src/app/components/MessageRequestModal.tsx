@@ -49,7 +49,7 @@ export function MessageRequestModal({ creatorId, creatorUsername, onClose }: Mes
             </div>
           ) : (
             <>
-              <p className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)] leading-[1.4]">
+              <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.5)] leading-[1.4]">
                 Write a message to introduce yourself and explain what you'd like to collaborate on. The creator will need to accept your request before you can chat.
               </p>
               <textarea
@@ -57,7 +57,7 @@ export function MessageRequestModal({ creatorId, creatorUsername, onClose }: Mes
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Hi! I'd love to collaborate with you on..."
                 rows={6}
-                className="w-full bg-[#2a2a2e] border border-[#323339] rounded-[12px] px-[16px] py-[14px] font-['Satoshi',sans-serif] text-[15px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] outline-none resize-none focus:border-[#a5ff5f] transition-colors leading-[1.6]"
+                className="w-full bg-[#2a2a2e] border border-[#323339] rounded-[12px] px-[16px] py-[14px] font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] outline-none resize-none focus:border-[#a5ff5f] transition-colors leading-[1.6]"
               />
             </>
           )}

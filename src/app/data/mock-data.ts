@@ -20,6 +20,8 @@ export interface Project {
   status: string;
   startDate: string;
   genre: string;
+  projectType: string;
+  comments: { id: string; author: string; text: string; timestamp: string }[];
 }
 
 export interface Creator {
@@ -45,6 +47,8 @@ export interface Creator {
   /** First-person collab style; shown under "What it's like to collab with me". */
   collabVoice: string;
   showcaseImages: string[];
+  audioShowcase?: { title: string; thumbnail: string; audioSrc: string }[];
+  videoShowcase?: { title: string; youtubeId: string }[];
   recentCollabs: {
     id: string;
     title: string;
@@ -65,6 +69,7 @@ export const categories = [
   { id: 'development', label: 'Development', icon: 'computer' },
   { id: 'voice-acting', label: 'Voice Acting', icon: 'mic' },
   { id: 'composing', label: 'Composing', icon: 'music' },
+  { id: '3d-modelling', label: '3D Modeling', icon: 'box' },
 ];
 
 export const paymentTypes = ['Any', 'Paid', 'Hobby'];
@@ -73,16 +78,52 @@ export const availabilities = ['Any', 'Open', 'Closed'];
 
 import imgProjectGnosisThumbnail from "../../assets/projects/project-gnosis.png";
 import imgMonstersWithinThumbnail from "../../assets/projects/monsters-within.png";
+import imgEidolwareThumbnail from "../../assets/projects/eidolware/thumbnail.png";
+import imgEidolwareShowcase1 from "../../assets/projects/eidolware/showcase-1.png";
+import imgEidolwareShowcase2 from "../../assets/projects/eidolware/showcase-2.png";
 import imgStarbinskiGlimpse from "../../assets/creators/starbinski/glimpse-of-insanity.png";
 import imgStarbinskiToFeel from "../../assets/creators/starbinski/to-feel-too-much.png";
 import imgStarbinskiMonster from "../../assets/creators/starbinski/a-monster.png";
 import imgStarbinskiWhy from "../../assets/creators/starbinski/why-i-write.png";
-import avatarKitsune from "../../assets/avatars/creators/avatar-kitsune.png";
+import avatarEuphy from "../../assets/avatars/creators/avatar-euphy.png";
 import avatarStarbinski from "../../assets/avatars/creators/avatar-starbinski.png";
-import avatarPixelforge from "../../assets/avatars/creators/avatar-pixelforge.png";
-import avatarEchoVoice from "../../assets/avatars/creators/avatar-echo-voice.png";
+import avatarDotDev from "../../assets/avatars/creators/avatar-dotdev.png";
+import imgDotDev1 from "../../assets/creators/dotdev/showcase-1.png";
+import imgDotDev2 from "../../assets/creators/dotdev/showcase-2.png";
+import imgDotDev3 from "../../assets/creators/dotdev/showcase-3.png";
+import imgDotDev4 from "../../assets/creators/dotdev/showcase-4.png";
+import imgGnosisShowcase1 from "../../assets/projects/gnosis-showcase/showcase-1.png";
+import imgGnosisShowcase2 from "../../assets/projects/gnosis-showcase/showcase-2.png";
+import imgGnosisShowcase3 from "../../assets/projects/gnosis-showcase/showcase-3.png";
+import imgGnosisShowcase4 from "../../assets/projects/gnosis-showcase/showcase-4.png";
+import imgGnosisShowcase5 from "../../assets/projects/gnosis-showcase/showcase-5.png";
+import avatarDylanRayOwen from "../../assets/avatars/creators/avatar-dylan-ray-owen.png";
 import avatarSynthwaveSam from "../../assets/avatars/creators/avatar-synthwave-sam.png";
-import avatarArtisanLily from "../../assets/avatars/creators/avatar-artisan-lily.png";
+import avatarEstellePanel from "../../assets/avatars/creators/avatar-estelle-panel.png";
+import imgEuphy1 from "../../assets/creators/euphy/showcase-1.png";
+import imgEuphy2 from "../../assets/creators/euphy/showcase-2.png";
+import imgEuphy3 from "../../assets/creators/euphy/showcase-3.png";
+import imgEuphy4 from "../../assets/creators/euphy/showcase-4.png";
+import imgEuphy5 from "../../assets/creators/euphy/showcase-5.png";
+import imgEchoVoice1 from "../../assets/creators/echo-voice/showcase-1.png";
+import imgEchoVoice2 from "../../assets/creators/echo-voice/showcase-2.png";
+import imgEchoVoice3 from "../../assets/creators/echo-voice/showcase-3.png";
+import imgDylanYT from "../../assets/creators/echo-voice/yt-thumbnail.jpg";
+import imgSynthwaveSam1 from "../../assets/creators/synthwave-sam/showcase-1.png";
+import imgSynthwaveSam2 from "../../assets/creators/synthwave-sam/showcase-2.png";
+import imgSynthwaveSam3 from "../../assets/creators/synthwave-sam/showcase-3.png";
+import imgGPLostSoul from "../../assets/creators/synthwave-sam/lost-soul.png";
+import imgGPWarrior from "../../assets/creators/synthwave-sam/warrior.png";
+import imgGPDeduction from "../../assets/creators/synthwave-sam/deduction-method.png";
+import imgGPTimeCollapses from "../../assets/creators/synthwave-sam/when-time-collapses.png";
+import audioGPLostSoul from "../../assets/creators/synthwave-sam/lost-soul.mp3";
+import audioGPWarrior from "../../assets/creators/synthwave-sam/warrior.mp3";
+import audioGPDeduction from "../../assets/creators/synthwave-sam/deduction-method.mp3";
+import audioGPTimeCollapses from "../../assets/creators/synthwave-sam/when-time-collapses.mp3";
+import imgEstellePanel1 from "../../assets/creators/estelle-panel/showcase-1.png";
+import imgEstellePanel2 from "../../assets/creators/estelle-panel/showcase-2.png";
+import imgEstellePanel3 from "../../assets/creators/estelle-panel/showcase-3.png";
+import imgEstellePanel4 from "../../assets/creators/estelle-panel/showcase-4.png";
 
 export const projects: Project[] = [
   {
@@ -105,10 +146,11 @@ export const projects: Project[] = [
     category: 'illustration',
     fullDescription: 'Welcome to Project Gnosis, a Narrated Audio Drama. Project Gnosis is a cyberpunk urban fantasy focused on exploring myths and legends from around the world. In this world, mythic creatures live throughout the world in secret. However, this secrecy is always near its breaking point due to conflicts between factions, government agents, and rogue entities.\n\nWe are a passionate team of creators building an immersive audio experience that blends world mythology with a gritty, neon-soaked cyberpunk aesthetic. The project involves full voice acting, original music composition, and illustrated scene cards that accompany each episode.\n\nWe are currently looking for talented illustrators who can capture the essence of our characters and world, as well as writers who can help expand our lore and episode scripts. This is a long-term hobby project driven by passion for storytelling.',
     showcaseImages: [
-      'https://images.unsplash.com/photo-1762341154386-fa765c9f2aa5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjeWJlcnB1bmslMjBjaXR5JTIwZGlnaXRhbCUyMGFydHxlbnwxfHx8fDE3NzU0NTI2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwY3JlYXR1cmUlMjBpbGx1c3RyYXRpb24lMjBkYXJrfGVufDF8fHx8MTc3NTQ1MjY2MXww&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1725854928339-94a96e94f629?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2ktZmklMjBlbnZpcm9ubWVudCUyMGNvbmNlcHQlMjBhcnR8ZW58MXx8fHwxNzc1NDUyNjYxfDA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1762968755007-7cc86ae46707?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zdGVyJTIwY3JlYXR1cmUlMjBkYXJrJTIwY29uY2VwdHxlbnwxfHx8fDE3NzU0NTI2NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      imgGnosisShowcase1,
+      imgGnosisShowcase2,
+      imgGnosisShowcase3,
+      imgGnosisShowcase4,
+      imgGnosisShowcase5,
     ],
     roles: [
       { role: 'Illustrator', needed: 2, filled: 1 },
@@ -116,20 +158,27 @@ export const projects: Project[] = [
     ],
     team: [
       { username: '@MQ Media', role: 'Project Lead / Director', avatar: '' },
-      { username: '@echo_voice', role: 'Voice Actor', avatar: '' },
-      { username: '@kitsune_art', role: 'Illustrator', avatar: '' },
-      { username: '@synthwave_sam', role: 'Composer', avatar: '' },
+      { username: '@Dylan Ray Owen', role: 'Voice Actor', avatar: '' },
+      { username: '@Euphy', role: 'Illustrator', avatar: '' },
+      { username: '@Grand Project', role: 'Composer', avatar: '' },
     ],
     status: 'In Production',
     startDate: 'Jan 2026',
     genre: 'Cyberpunk Urban Fantasy',
+    projectType: 'Podcast',
+    comments: [
+      { id: 'c-1', author: '@starbinski', text: 'The world-building on this is incredible. Love how you blend real-world mythology with cyberpunk aesthetics. Would be thrilled to help with the writing side.', timestamp: '2 days ago' },
+      { id: 'c-2', author: '@Dylan Ray Owen', text: 'Recording session for Episode 3 went really well! The script keeps getting better.', timestamp: '4 days ago' },
+      { id: 'c-3', author: '@Estelle Panel', text: 'The scene cards from last episode were gorgeous. This project has such a strong visual identity already.', timestamp: '1 week ago' },
+      { id: 'c-4', author: '@Grand Project', text: 'Just finished the main theme arrangement. Can\u2019t wait for everyone to hear it in context.', timestamp: '1 week ago' },
+    ],
   },
   {
     id: '2',
-    title: 'The Monsters Within',
-    description: 'We are seeking team members a cooperative horror game. This is a remote, paid project. The game features a cast of four playable characters, which serve as the primary lead roles. These roles cover the base game; however, dlc content is planned, and we intend to bring back the original cast.',
-    thumbnail: imgMonstersWithinThumbnail,
-    listedBy: '@MQ Media',
+    title: 'Eidolware',
+    description: 'Infiltrate a 24/7 anime convention where holograms are real, influencers reign supreme, and Otaku culture has gone completely off the rails in this satirical cyberpunk action-RPG by FATBAT Studio.',
+    thumbnail: imgEidolwareThumbnail,
+    listedBy: '@FATBAT Studio',
     timeAgo: '5 days ago',
     tags: [
       { label: 'Paid', type: 'outline' },
@@ -141,38 +190,47 @@ export const projects: Project[] = [
     duration: 'Short-term',
     availability: 'Open',
     category: 'development',
-    fullDescription: 'We are seeking team members for a cooperative horror game. This is a remote, paid project. The game features a cast of four playable characters, which serve as the primary lead roles. These roles cover the base game; however, DLC content is planned, and we intend to bring back the original cast.\n\nThe Monsters Within is a 4-player cooperative survival horror game set in an abandoned research facility. Players must work together to uncover the dark secrets buried beneath the facility while surviving encounters with terrifying creatures born from failed experiments.\n\nWe need a developer experienced with multiplayer networking and game systems, as well as a composer who can create tension-building atmospheric soundscapes. This is a paid, short-term engagement with potential for continued work on DLC content.',
+    fullDescription: 'Infiltrate a 24/7 anime convention where holograms are real, influencers reign supreme, and Otaku culture has gone completely off the rails in this satirical cyberpunk action-RPG by FATBAT Studio.\n\nYou are Anna Lam, a former AI engineer. The mysterious death of your mentor has led you to a newly established 24-hour anime convention, owned and operated by a crypto-billionaire who styles himself "Fedora Mask".\n\nImmerse yourself in the convention and meet its strange denizens. Team up with unlikely allies to defeat Fedora Mask\u2019s lieutenants and gain access to the convention\u2019s inner circle. Uncover the truth behind your mentor\u2019s death and if anyone is responsible, put an end to their plans.',
     showcaseImages: [
-      'https://images.unsplash.com/photo-1551536637-f5f1984f1398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3Jyb3IlMjBnYW1lJTIwZGFyayUyMGF0bW9zcGhlcmV8ZW58MXx8fHwxNzc1NDA1NTE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1762968755007-7cc86ae46707?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25zdGVyJTIwY3JlYXR1cmUlMjBkYXJrJTIwY29uY2VwdHxlbnwxfHx8fDE3NzU0NTI2NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1725854928339-94a96e94f629?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2ktZmklMjBlbnZpcm9ubWVudCUyMGNvbmNlcHQlMjBhcnR8ZW58MXx8fHwxNzc1NDUyNjYxfDA&ixlib=rb-4.1.0&q=80&w=1080',
+      imgEidolwareThumbnail,
+      imgEidolwareShowcase1,
+      imgEidolwareShowcase2,
     ],
     roles: [
       { role: 'Developer', needed: 1, filled: 0 },
       { role: 'Composer', needed: 1, filled: 0 },
     ],
     team: [
-      { username: '@MQ Media', role: 'Project Lead / Producer', avatar: '' },
-      { username: '@artisan_lily', role: 'Concept Artist', avatar: '' },
+      { username: '@FATBAT Studio', role: 'Project Lead / Developer', avatar: '' },
+      { username: '@Dylan Ray Owen', role: 'Voice Actor', avatar: '' },
+      { username: '@Estelle Panel', role: 'Concept Artist', avatar: '' },
     ],
-    status: 'Pre-Production',
+    status: 'In Development',
     startDate: 'Mar 2026',
-    genre: 'Cooperative Horror',
+    genre: 'Satirical Cyberpunk Action-RPG',
+    projectType: 'Video Game',
+    comments: [
+      { id: 'c-5', author: '@Dylan Ray Owen', text: 'The voice direction doc is super detailed\u2014made my first session a breeze. Really excited about the Fedora Mask character.', timestamp: '3 days ago' },
+      { id: 'c-6', author: '@Estelle Panel', text: 'Concept art for the convention floor is coming together. The neon signage and hologram stalls are going to look wild.', timestamp: '5 days ago' },
+      { id: 'c-7', author: '@DotDev', text: 'This premise is absolutely unhinged in the best way. Would love to help build the UI for the in-game phone system if you need a hand.', timestamp: '1 week ago' },
+    ],
   },
 ];
 
-export const creators: Creator[] = [
+/** Open listings first, then unspecified, then Closed. */
+function sortRecentCollabsByListingStatus(collabs: Creator['recentCollabs']): Creator['recentCollabs'] {
+  const rank = (s?: 'Open' | 'Closed') => (s === 'Open' ? 0 : s === 'Closed' ? 2 : 1);
+  return [...collabs].sort((a, b) => rank(a.listingStatus) - rank(b.listingStatus));
+}
+
+const creatorsRaw: Creator[] = [
   {
     id: '1',
-    username: '@kitsune_art',
-    avatar: avatarKitsune,
+    username: '@Euphy',
+    avatar: avatarEuphy,
     profileBannerColor: '#1f5a3b',
     bio: "I'm looking for someone to collab with to make a comic! I specialize in character design and sequential art.",
-    portfolioImages: [
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1667419136229-ce2c6e127a43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwcG9ydHJhaXQlMjBpbGx1c3RyYXRpb24lMjBjb2xvcmZ1bHxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1763732397784-c5ff2651d40c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21pYyUyMGJvb2slMjBhcnQlMjBwYW5lbCUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    ],
+    portfolioImages: [imgEuphy1, imgEuphy2, imgEuphy3],
     skillTags: ['Illustrator', 'Writer'],
     interestTags: ['Marvel Cinematic Universe', 'Honkai Star Rail'],
     paymentType: 'Hobby',
@@ -183,22 +241,15 @@ export const creators: Creator[] = [
     languages: ['EN', 'JP'],
     lastSeen: 'Today',
     socials: [
-      { platform: 'Bluesky', handle: '@kitsune_art', url: '#' },
-      { platform: 'Twitter', handle: '@kitsune_art', url: '#' },
-      { platform: 'Instagram', handle: '@kitsune_art', url: '#' },
+      { platform: 'Bluesky', handle: '@Euphy', url: '#' },
+      { platform: 'Twitter', handle: '@Euphy', url: '#' },
+      { platform: 'Instagram', handle: '@Euphy', url: '#' },
     ],
     maxProjects: 3,
     aboutMe: "I'm looking for someone to collab with to make a comic! I specialize in character design and sequential art. I love working on collaborative projects that push creative boundaries. My work spans across multiple mediums, and I'm always eager to explore new styles and techniques with fellow creators.",
     collabVoice:
       "I’m pretty laid-back day-to-day but weirdly obsessive once I’m in the flow—expect lots of WIPs in Discord and zero drama about revisions. I work async across time zones fine; just drop refs and mood boards and I’ll run with them. I’m on time for milestones when we agree on dates, and I’d rather over-communicate a panel than ghost you wondering what’s happening.",
-    showcaseImages: [
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1667419136229-ce2c6e127a43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwcG9ydHJhaXQlMjBpbGx1c3RyYXRpb24lMjBjb2xvcmZ1bHxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1763732397784-c5ff2651d40c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21pYyUyMGJvb2slMjBhcnQlMjBwYW5lbCUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwY2hhcmFjdGVyJTIwYXJ0JTIwaWxsdXN0cmF0aW9ufGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1728995025396-b5141e209455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwYXJ0JTIwY29uY2VwdCUyMGVudmlyb25tZW50fGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1760113671986-63ccb46ae202?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5nYSUyMGNvbWljJTIwcGFnZSUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNjEzODR8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    ],
+    showcaseImages: [imgEuphy1, imgEuphy2, imgEuphy3, imgEuphy4, imgEuphy5],
     recentCollabs: [
       {
         id: 'rc-1',
@@ -209,12 +260,19 @@ export const creators: Creator[] = [
         projectId: '1',
         listingStatus: 'Open',
       },
-      { id: 'rc-2', title: 'Starbound Legends', role: 'Character Designer', thumbnail: 'https://images.unsplash.com/photo-1728995025396-b5141e209455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwYXJ0JTIwY29uY2VwdCUyMGVudmlyb25tZW50fGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080', collaborators: ['@pixelforge', '@echo_voice'] },
+      {
+        id: 'rc-2',
+        title: 'Starbound Legends',
+        role: 'Character Designer',
+        thumbnail: 'https://images.unsplash.com/photo-1728995025396-b5141e209455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwYXJ0JTIwY29uY2VwdCUyMGVudmlyb25tZW50fGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080',
+        collaborators: ['@DotDev', '@Dylan Ray Owen'],
+        listingStatus: 'Closed',
+      },
     ],
     testimonials: [
-      { id: 't-1', author: '@MQ Media', text: 'Kitsune is an incredible artist with a strong work ethic. Their character designs for Project Gnosis were absolutely stunning. Highly recommend!', avatar: '' },
-      { id: 't-2', author: '@starbinski', text: 'Working with kitsune_art was a fantastic experience. They brought our characters to life in ways I never imagined. Very responsive and professional.', avatar: '' },
-      { id: 't-3', author: '@pixelforge', text: 'Amazing collaborator! Quick turnaround, beautiful art, and always open to feedback. Would work with them again in a heartbeat.', avatar: '' },
+      { id: 't-1', author: '@MQ Media', text: 'Euphy is an incredible artist with a strong work ethic. Their character designs for Project Gnosis were absolutely stunning. Highly recommend!', avatar: '' },
+      { id: 't-2', author: '@starbinski', text: 'Working with Euphy was a fantastic experience. They brought our characters to life in ways I never imagined. Very responsive and professional.', avatar: '' },
+      { id: 't-3', author: '@DotDev', text: 'Amazing collaborator! Quick turnaround, beautiful art, and always open to feedback. Would work with them again in a heartbeat.', avatar: '' },
     ],
     portfolioLinks: [
       { platform: 'ArtStation', url: '#' },
@@ -259,13 +317,13 @@ export const creators: Creator[] = [
         title: 'Echoes of Dawn',
         role: 'Writer',
         thumbnail: imgStarbinskiWhy,
-        collaborators: ['@kitsune_art'],
+        collaborators: ['@Euphy'],
       },
     ],
     testimonials: [
       {
         id: 't-4',
-        author: '@kitsune_art',
+        author: '@Euphy',
         text: 'starbinski is a talented writer with incredible storytelling skills. Our collaboration was seamless!',
         avatar: '',
       },
@@ -277,57 +335,54 @@ export const creators: Creator[] = [
   },
   {
     id: '3',
-    username: '@pixelforge',
-    avatar: avatarPixelforge,
-    profileBannerColor: '#2b3d6b',
-    bio: 'Game developer specializing in Unity and Unreal Engine. Looking for artists and composers to collaborate on an indie RPG.',
+    username: '@DotDev',
+    avatar: avatarDotDev,
+    profileBannerColor: '#1a2a4a',
+    bio: 'Web developer with 14 years of experience across Shopify, WordPress, and Wix. Looking to collaborate on creative digital projects.',
     portfolioImages: [
-      'https://images.unsplash.com/photo-1647727416391-0bc8f5bda78e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHwzZCUyMHJlbmRlciUyMGNoYXJhY3RlciUyMGRlc2lnbnxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMHJldHJvJTIwZ2FtZXxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwaWxsdXN0cmF0aW9uJTIwZmFudGFzeSUyMGFydHxlbnwxfHx8fDE3NzUyNDExMjJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+      imgDotDev1,
+      imgDotDev2,
+      imgDotDev3,
     ],
-    skillTags: ['Development', 'Hobby'],
-    interestTags: ['Unity', 'RPG', 'Indie'],
-    paymentType: 'Hobby',
+    skillTags: ['Development', 'Paid'],
+    interestTags: ['Shopify', 'WordPress', 'Web Design', 'Mobile Apps'],
+    paymentType: 'Paid',
     duration: 'Long-term',
     availability: 'Open',
     category: 'development',
-    localTime: '7:42 PM GMT',
-    languages: ['EN', 'DE'],
-    lastSeen: '1 day ago',
+    localTime: '8:42 PM CET',
+    languages: ['EN'],
+    lastSeen: 'Today',
     socials: [
-      { platform: 'Twitter', handle: '@pixelforge', url: '#' },
-      { platform: 'GitHub', handle: '@pixelforge', url: '#' },
+      { platform: 'Twitter', handle: '@DotDev', url: '#' },
+      { platform: 'Website', handle: 'dotdev.co', url: '#' },
     ],
-    maxProjects: 2,
-    aboutMe: 'Game developer specializing in Unity and Unreal Engine. Open to the right scoped collaborations—message to discuss fit and timing.',
+    maxProjects: 3,
+    aboutMe: 'Web developer with 14 years of industry experience, looking to team up with fellow creators on collaborative digital projects. I specialize in building polished, high-converting websites on platforms like Shopify, WordPress, and Wix, and I’m proficient in mobile app development too. I also bring strong digital marketing chops to the table—SEO, paid campaigns, content strategy—so I can help a project not just launch, but actually reach people. If you need a dev who treats your project like their own, let’s talk.',
     collabVoice:
-      'When I’m building with someone I want specs in writing—GitHub issues, checklists, no vague “make it fun.” I’m async-first, review PRs on a predictable rhythm, and I’m blunt about scope so nobody’s surprised at crunch. If you’re into milestone-based sprints and documented decisions, we’ll get along; if you need daily stand-ups in voice, I’m probably not your person.',
+      'I like a quick kickoff call to nail down scope, then I’m heads-down until the first review. I work in sprints—you’ll get a staging link every few days so nothing’s a surprise. Slack or Discord for day-to-day, Loom videos for walkthroughs. I’m flexible on hours and timezone-friendly; I’d rather over-deliver than under-communicate.',
     showcaseImages: [
-      'https://images.unsplash.com/photo-1647727416391-0bc8f5bda78e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHwzZCUyMHJlbmRlciUyMGNoYXJhY3RlciUyMGRlc2lnbnxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMHJldHJvJTIwZ2FtZXxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwaWxsdXN0cmF0aW9uJTIwZmFudGFzeSUyMGFydHxlbnwxfHx8fDE3NzUyNDExMjJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      imgDotDev1,
+      imgDotDev2,
+      imgDotDev3,
+      imgDotDev4,
     ],
     recentCollabs: [],
     testimonials: [
-      { id: 't-5', author: '@synthwave_sam', text: 'Pixelforge is a brilliant developer. Their technical skills are top-notch!', avatar: '' },
+      { id: 't-5', author: '@Grand Project', text: 'DotDev built our project site from scratch and it looked incredible. Fast turnaround, clean code, and great communication throughout.', avatar: '' },
     ],
     portfolioLinks: [
       { platform: 'GitHub', url: '#' },
-      { platform: 'itch.io', url: '#' },
+      { platform: 'Website', url: '#' },
     ],
   },
   {
     id: '4',
-    username: '@echo_voice',
-    avatar: avatarEchoVoice,
+    username: '@Dylan Ray Owen',
+    avatar: avatarDylanRayOwen,
     profileBannerColor: '#4b3a22',
-    bio: 'Professional voice actor with home studio setup. Available for character roles, narration, and audio drama projects.',
-    portfolioImages: [
-      'https://images.unsplash.com/photo-1750327324364-6700eab9ad7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXRlcmNvbG9yJTIwcGFpbnRpbmclMjBhYnN0cmFjdCUyMGFydHxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1726332365444-76095559c75c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb25jZXB0JTIwYXJ0JTIwbGFuZHNjYXBlJTIwZGlnaXRhbHxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    ],
+    bio: "Dallas-based voice actor with a home studio, here to lend my voice to YOUR project! If you want to make something together, shoot me a message!",
+    portfolioImages: [imgDylanYT, imgEchoVoice1, imgEchoVoice2],
     skillTags: ['Voice Acting', 'Paid'],
     interestTags: ['Drama', 'RPG', 'Anime'],
     paymentType: 'Paid',
@@ -338,30 +393,30 @@ export const creators: Creator[] = [
     languages: ['EN', 'ES'],
     lastSeen: '30 min ago',
     socials: [
-      { platform: 'Twitter', handle: '@echo_voice', url: '#' },
-      { platform: 'YouTube', handle: '@echo_voice', url: '#' },
+      { platform: 'Twitter', handle: '@Dylan Ray Owen', url: '#' },
+      { platform: 'YouTube', handle: '@Dylan Ray Owen', url: '#' },
     ],
     maxProjects: 5,
-    aboutMe: 'Professional voice actor with home studio setup. Available for character roles, narration, and audio drama projects. I bring characters to life with versatile vocal performances.',
+    aboutMe: "Hi there! My name's Dylan and I'm a Dallas-based voice actor with a home studio here to lend my voice to YOUR project! If you want to make something together, shoot me a message!",
     collabVoice:
       'I run a tight ship on scheduling—book a session, you’ll get files named the way you asked and usually ahead of the clock. I like direction in bullet points or marked scripts; ad-libbing is fun once we trust each other. Communication is email or Discord for logistics, WAV delivery by link; rush turnaround costs extra and I’ll always quote before I record.',
-    showcaseImages: [
-      'https://images.unsplash.com/photo-1750327324364-6700eab9ad7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXRlcmNvbG9yJTIwcGFpbnRpbmclMjBhYnN0cmFjdCUyMGFydHxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    showcaseImages: [],
+    videoShowcase: [
+      { title: 'Voice Acting Demo Reel', youtubeId: 'wgqK5uXtAm0' },
     ],
     recentCollabs: [
       {
         id: 'rc-4',
-        title: 'The Monsters Within',
+        title: 'Eidolware',
         role: 'Voice Actor',
-        thumbnail: imgMonstersWithinThumbnail,
-        collaborators: ['@MQ Media'],
+        thumbnail: imgEidolwareThumbnail,
+        collaborators: ['@FATBAT Studio'],
         projectId: '2',
-        listingStatus: 'Closed',
+        listingStatus: 'Open',
       },
     ],
     testimonials: [
-      { id: 't-6', author: '@MQ Media', text: 'Echo delivered phenomenal voice work. Their range and professionalism made our project shine.', avatar: '' },
+      { id: 't-6', author: '@FATBAT Studio', text: 'Dylan delivered phenomenal voice work. Their range and professionalism made our project shine.', avatar: '' },
     ],
     portfolioLinks: [
       { platform: 'YouTube', url: '#' },
@@ -370,15 +425,11 @@ export const creators: Creator[] = [
   },
   {
     id: '5',
-    username: '@synthwave_sam',
+    username: '@Grand Project',
     avatar: avatarSynthwaveSam,
     profileBannerColor: '#2a4b43',
     bio: 'Composer and sound designer creating atmospheric soundscapes. Interested in horror and sci-fi game projects.',
-    portfolioImages: [
-      'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMHJldHJvJTIwZ2FtZXxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1647727416391-0bc8f5bda78e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHwzZCUyMHJlbmRlciUyMGNoYXJhY3RlciUyMGRlc2lnbnxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1667419136229-ce2c6e127a43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwcG9ydHJhaXQlMjBpbGx1c3RyYXRpb24lMjBjb2xvcmZ1bHxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    ],
+    portfolioImages: [imgSynthwaveSam1, imgSynthwaveSam2, imgSynthwaveSam3],
     skillTags: ['Composing', 'Hobby'],
     interestTags: ['Horror', 'Sci-fi', 'Ambient'],
     paymentType: 'Hobby',
@@ -389,16 +440,19 @@ export const creators: Creator[] = [
     languages: ['EN', 'FR'],
     lastSeen: '3 days ago',
     socials: [
-      { platform: 'SoundCloud', handle: '@synthwave_sam', url: '#' },
-      { platform: 'Bandcamp', handle: '@synthwave_sam', url: '#' },
+      { platform: 'SoundCloud', handle: '@GrandProject', url: '#' },
+      { platform: 'Bandcamp', handle: '@GrandProject', url: '#' },
     ],
     maxProjects: null,
     aboutMe: 'Composer and sound designer creating atmospheric soundscapes. Open to hearing about projects—reach out to discuss scope and schedule.',
     collabVoice:
       'My process is tidal—I’ll go quiet for a few days while I chase a sound, then flood you with stems and alts. I’m lax about chatty check-ins but ruthless about vibe: send reference tracks, not adjectives. I prefer async DMs and shared folders; if you need live iteration we’ll block a couple of focused calls instead of endless pings.',
-    showcaseImages: [
-      'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXhlbCUyMGFydCUyMHJldHJvJTIwZ2FtZXxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1647727416391-0bc8f5bda78e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHwzZCUyMHJlbmRlciUyMGNoYXJhY3RlciUyMGRlc2lnbnxlbnwxfHx8fDE3NzUzNTU2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    showcaseImages: [imgGPLostSoul, imgGPWarrior, imgGPDeduction, imgGPTimeCollapses],
+    audioShowcase: [
+      { title: 'Lost Soul', thumbnail: imgGPLostSoul, audioSrc: audioGPLostSoul },
+      { title: 'Warrior', thumbnail: imgGPWarrior, audioSrc: audioGPWarrior },
+      { title: 'Deduction Method', thumbnail: imgGPDeduction, audioSrc: audioGPDeduction },
+      { title: 'When Time Collapses', thumbnail: imgGPTimeCollapses, audioSrc: audioGPTimeCollapses },
     ],
     recentCollabs: [],
     testimonials: [],
@@ -409,45 +463,48 @@ export const creators: Creator[] = [
   },
   {
     id: '6',
-    username: '@artisan_lily',
-    avatar: avatarArtisanLily,
+    username: '@Estelle Panel',
+    avatar: avatarEstellePanel,
     profileBannerColor: '#5a2d1f',
-    bio: 'Freelance illustrator focused on fantasy and character art. Open to both paid and passion projects!',
-    portfolioImages: [
-      'https://images.unsplash.com/photo-1763732397784-c5ff2651d40c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21pYyUyMGJvb2slMjBhcnQlMjBwYW5lbCUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1769203905592-75f6902dc651?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXJrJTIwZmFudGFzeSUyMGdvdGhpYyUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    ],
-    skillTags: ['Illustration', 'Paid'],
-    interestTags: ['Fantasy', 'DnD', 'Original Character'],
+    bio: 'Lighting Artist in the video game industry, specializing in level and cinematic lighting.',
+    portfolioImages: [imgEstellePanel1, imgEstellePanel2, imgEstellePanel3],
+    skillTags: ['Lighting', 'Paid'],
+    interestTags: ['Environments', 'Cinematics', 'Games'],
     paymentType: 'Paid',
     duration: 'Short-term',
     availability: 'Open',
-    category: 'illustration',
-    localTime: '9:42 AM PST',
-    languages: ['EN', 'KR'],
+    category: '3d-modelling',
+    localTime: '4:22 PM CET',
+    languages: ['EN', 'FR'],
     lastSeen: 'Today',
     socials: [
-      { platform: 'Twitter', handle: '@artisan_lily', url: '#' },
-      { platform: 'Instagram', handle: '@artisan_lily', url: '#' },
-      { platform: 'Bluesky', handle: '@artisan_lily', url: '#' },
+      { platform: 'Twitter', handle: '@EstellePanel', url: '#' },
+      { platform: 'Instagram', handle: '@EstellePanel', url: '#' },
+      { platform: 'Bluesky', handle: '@EstellePanel', url: '#' },
     ],
     maxProjects: 4,
-    aboutMe: 'Freelance illustrator focused on fantasy and character art. Open to both paid and passion projects! I love bringing fantastical worlds and characters to life.',
+    aboutMe: `Lighting Artist in the video game industry, specializing in level and cinematic lighting.
+
+My experience includes working on in-house Engines (Silk Engine) and public Engines (Unreal 5), allowing me to quickly adapt to different pipelines. I have experience working on a project involving day–night cycle systems and the technical constraints associated.
+
+Based in France, but open to remote or relocation opportunities.`,
     collabVoice:
-      'I’m friendly and chatty in DMs—expect rough color thumbs before I polish, and Pinterest boards are my love language. I like short feedback rounds with numbered notes so nothing gets lost. Turnaround speeds up once we lock a design; I’m punctual on invoices and file handoff, and I’ll nudge you if a reference is missing instead of guessing.',
-    showcaseImages: [
-      'https://images.unsplash.com/photo-1763732397784-c5ff2651d40c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21pYyUyMGJvb2slMjBhcnQlMjBwYW5lbCUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1769203905592-75f6902dc651?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXJrJTIwZmFudGFzeSUyMGdvdGhpYyUyMGlsbHVzdHJhdGlvbnxlbnwxfHx8fDE3NzUzNTU2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1613658501648-58f72a09355f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGNoYXJhY3RlciUyMGRpZ2l0YWwlMjBwYWludGluZ3xlbnwxfHx8fDE3NzUzNTU2NjN8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      'https://images.unsplash.com/photo-1695152979271-a8927a3b2700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3YXRlcmNvbG9yJTIwcG9ydHJhaXQlMjBwYWludGluZyUyMGFydHxlbnwxfHx8fDE3NzUzNjEzODR8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    ],
+      'I like clear lighting targets up front—reference grabs, mood boards, and what “good” looks like in-engine. I work iteratively with fast dailies so we can catch reads early; numbered feedback in reviews or docs keeps rounds tight. I’m used to Unreal and proprietary tools alike, and I’ll flag technical risks (performance, time of day, cinematics) early rather than polishing in the wrong direction.',
+    showcaseImages: [imgEstellePanel1, imgEstellePanel2, imgEstellePanel3, imgEstellePanel4],
     recentCollabs: [
-      { id: 'rc-5', title: 'Realm of Echoes', role: 'Illustrator', thumbnail: 'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwY2hhcmFjdGVyJTIwYXJ0JTIwaWxsdXN0cmF0aW9ufGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080', collaborators: ['@starbinski', '@echo_voice'] },
+      { id: 'rc-6', title: 'Eidolware', role: 'Concept Artist', thumbnail: imgEidolwareThumbnail, collaborators: ['@FATBAT Studio', '@Dylan Ray Owen'], projectId: '2', listingStatus: 'Open' },
+      {
+        id: 'rc-5',
+        title: 'Realm of Echoes',
+        role: 'Illustrator',
+        thumbnail: 'https://images.unsplash.com/photo-1773432661163-351c473345e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwY2hhcmFjdGVyJTIwYXJ0JTIwaWxsdXN0cmF0aW9ufGVufDF8fHx8MTc3NTM2MTM4M3ww&ixlib=rb-4.1.0&q=80&w=1080',
+        collaborators: ['@starbinski', '@Dylan Ray Owen'],
+        listingStatus: 'Closed',
+      },
     ],
     testimonials: [
-      { id: 't-7', author: '@starbinski', text: 'Lily is an exceptional artist. Her fantasy illustrations added so much depth to our project!', avatar: '' },
-      { id: 't-8', author: '@echo_voice', text: 'Wonderful to collaborate with. Great communication and stunning artwork every time.', avatar: '' },
+      { id: 't-7', author: '@starbinski', text: 'Estelle is an exceptional lighting artist. Her work on our environments made every scene feel intentional and alive.', avatar: '' },
+      { id: 't-8', author: '@Dylan Ray Owen', text: 'Wonderful to collaborate with—clear communication and a sharp eye for mood and readability in every shot.', avatar: '' },
     ],
     portfolioLinks: [
       { platform: 'ArtStation', url: '#' },
@@ -455,6 +512,11 @@ export const creators: Creator[] = [
     ],
   },
 ];
+
+export const creators: Creator[] = creatorsRaw.map((c) => ({
+  ...c,
+  recentCollabs: sortRecentCollabsByListingStatus(c.recentCollabs),
+}));
 
 export type CreatorSidebarLinkEntry =
   | { kind: 'social'; social: Creator['socials'][number] }

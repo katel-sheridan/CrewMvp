@@ -1,11 +1,33 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { Search, Send, Paperclip, Smile, MoreHorizontal, Clock, ExternalLink, User, MessageSquareText } from 'lucide-react';
+import { Search, Send, Paperclip, Smile, MoreHorizontal, Clock, ExternalLink, User, MessageSquareText, ArrowLeft } from 'lucide-react';
 import { useMessaging, Conversation, CURRENT_USER_HANDLE } from '../context/MessagingContext';
 import { creators, getCreatorSidebarLinkEntries } from '../data/mock-data';
 import { UserProfileAvatar } from './UserProfileAvatar';
 import { LinkPlatformIcon } from './LinkPlatformIcon';
 import { InterestTagPillList } from './InterestTagPill';
+import { cn } from './ui/utils';
+
+function useLgUp() {
+  const [lgUp, setLgUp] = useState(() =>
+    typeof window === 'undefined' ? true : window.matchMedia('(min-width: 1024px)').matches
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setLgUp(media.matches);
+    onChange();
+    // Safari < 14 fallback
+    if (media.addEventListener) media.addEventListener('change', onChange);
+    else media.addListener(onChange);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener('change', onChange);
+      else media.removeListener(onChange);
+    };
+  }, []);
+
+  return lgUp;
+}
 
 function PeerAvatar({
   avatarUrl,
@@ -88,19 +110,26 @@ function ConversationList({
   onSelect,
   search,
   onSearchChange,
+  className,
 }: {
   conversations: Conversation[];
   activeId: string | undefined;
   onSelect: (id: string) => void;
   search: string;
   onSearchChange: (v: string) => void;
+  className?: string;
 }) {
   const filtered = conversations.filter((c) =>
     c.creatorUsername.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <div className="flex flex-col w-[260px] shrink-0 border-r border-[#323339] h-full">
+   return (
+    <div
+      className={cn(
+        'flex flex-col w-full lg:w-[260px] shrink-0 border-[#323339] h-full min-h-0 lg:border-r border-b lg:border-b-0 max-h-[min(42vh,320px)] lg:max-h-none',
+        className
+      )}
+    >
       <div className="p-[16px] border-b border-[#323339]">
         <h2 className="font-['Satoshi',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] mb-[12px]">
           Messages
@@ -111,7 +140,7 @@ function ConversationList({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search..."
-            className="bg-transparent outline-none font-['Satoshi',sans-serif] text-[13px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] w-full"
+            className="bg-transparent outline-none font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] w-full"
           />
         </div>
       </div>
@@ -119,7 +148,7 @@ function ConversationList({
         {filtered.length === 0 ? (
           <div className="p-[16px]">
             <div className="bg-[#212226] border border-[#323339] rounded-[12px] p-[16px]">
-              <p className="font-['Satoshi',sans-serif] text-[13px] text-[rgba(255,255,255,0.6)] leading-[1.4]">
+              <p className="font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.6)] leading-[1.4]">
                 No conversations match your search.
               </p>
             </div>
@@ -139,14 +168,14 @@ function ConversationList({
               <PeerAvatar avatarUrl={conv.creatorAvatar} username={conv.creatorUsername} variant="list" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-[4px]">
-                  <span className="font-['Satoshi',sans-serif] font-[700] text-[13px] text-[rgba(255,255,255,0.87)] truncate">
+                  <span className="font-['Satoshi',sans-serif] font-[700] text-[14px] text-[rgba(255,255,255,0.87)] truncate">
                     {conv.creatorUsername}
                   </span>
                   <span className="font-['Satoshi',sans-serif] font-[400] text-[11px] text-[rgba(255,255,255,0.3)] shrink-0">
                     {timeAgo(lastMsg.timestamp)}
                   </span>
                 </div>
-                <p className="font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.4)] truncate mt-[2px]">
+                <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.4)] truncate mt-[2px]">
                   {lastMsg.text}
                 </p>
                 {conv.status === 'pending' && (
@@ -173,7 +202,7 @@ function ChatEmptyState() {
         <h2 className="font-['Tahoma',sans-serif] font-[700] text-[18px] text-[rgba(255,255,255,0.87)] leading-[1.1]">
           Select a conversation
         </h2>
-        <p className="mt-[8px] font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
+        <p className="mt-[8px] font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.6)] leading-[1.5]">
           Choose a creator on the left to view messages. New conversations will show up here once you send or receive a message request.
         </p>
       </div>
@@ -188,6 +217,7 @@ function ChatArea({
   onSend,
   showInfoPanel,
   onToggleInfoPanel,
+  onBack,
 }: {
   conversation: Conversation;
   newMessage: string;
@@ -195,6 +225,7 @@ function ChatArea({
   onSend: () => void;
   showInfoPanel: boolean;
   onToggleInfoPanel: () => void;
+  onBack: () => void;
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -234,6 +265,14 @@ function ChatArea({
       {/* Chat header */}
       <div className="flex items-center justify-between px-[20px] py-[14px] border-b border-[#323339] shrink-0">
         <div className="flex items-center gap-[12px]">
+          <button
+            type="button"
+            onClick={onBack}
+            className="lg:hidden size-[32px] rounded-full hover:bg-[#2a2a2e] flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Back to conversations"
+          >
+            <ArrowLeft size={18} className="text-[rgba(255,255,255,0.6)]" />
+          </button>
           <PeerAvatar
             avatarUrl={conversation.creatorAvatar}
             username={conversation.creatorUsername}
@@ -289,7 +328,7 @@ function ChatArea({
                 {isMine && (
                   <UserProfileAvatar className="size-[32px] rounded-full object-cover shrink-0 mt-[2px]" />
                 )}
-                <div className={`max-w-[65%] flex flex-col gap-[4px] ${isMine ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[min(92%,420px)] sm:max-w-[65%] flex flex-col gap-[4px] ${isMine ? 'items-end' : 'items-start'}`}>
                   <div
                     className={`px-[14px] py-[10px] rounded-[16px] ${
                       isMine
@@ -298,7 +337,7 @@ function ChatArea({
                     }`}
                   >
                     <p
-                      className="font-['Satoshi',sans-serif] font-[400] text-[14px] leading-[1.5] text-[rgba(255,255,255,0.87)]"
+                      className="font-['Satoshi',sans-serif] font-[400] text-[16px] leading-[1.5] text-[rgba(255,255,255,0.87)]"
                     >
                       {msg.text}
                     </p>
@@ -332,7 +371,7 @@ function ChatArea({
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             rows={1}
-            className="flex-1 bg-[#2a2a2e] border border-[#323339] rounded-[12px] px-[14px] py-[10px] font-['Satoshi',sans-serif] text-[14px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] outline-none resize-none focus:border-[#a5ff5f] transition-colors leading-[1.4]"
+            className="flex-1 bg-[#2a2a2e] border border-[#323339] rounded-[12px] px-[14px] py-[10px] font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.87)] placeholder:text-[rgba(255,255,255,0.3)] outline-none resize-none focus:border-[#a5ff5f] transition-colors leading-[1.4]"
           />
           <button
             onClick={onSend}
@@ -346,7 +385,7 @@ function ChatArea({
         </div>
       ) : (
         <div className="flex items-center justify-center py-[18px] border-t border-[#323339] shrink-0">
-          <p className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.4)]">
+          <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.4)]">
             {conversation.status === 'pending'
               ? 'Waiting for the creator to accept your message request...'
               : 'This conversation has been declined.'}
@@ -357,7 +396,7 @@ function ChatArea({
   );
 }
 
-function UserInfoPanel({ conversation }: { conversation: Conversation }) {
+function UserInfoPanel({ conversation, className }: { conversation: Conversation; className?: string }) {
   const navigate = useNavigate();
   const profileCreator = creators.find((c) => c.id === conversation.creatorId);
   const sidebarLinks = getCreatorSidebarLinkEntries(profileCreator);
@@ -365,7 +404,12 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
   const localTime = profileCreator?.localTime;
 
   return (
-    <div className="w-[240px] shrink-0 border-l border-[#323339] h-full overflow-y-auto p-[22px] flex flex-col gap-[24px]">
+    <div
+      className={cn(
+        'w-full lg:w-[240px] shrink-0 border-t lg:border-t-0 lg:border-l border-[#323339] lg:h-full overflow-y-auto p-[22px] flex flex-col gap-[24px] bg-[#0e0c13]',
+        className
+      )}
+    >
       {/* Avatar & username */}
       <div className="flex flex-col items-center gap-[12px]">
         <PeerAvatar
@@ -373,12 +417,12 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
           username={conversation.creatorUsername}
           variant="panel"
         />
-        <span className="font-['Satoshi',sans-serif] font-[700] text-[15px] text-[rgba(255,255,255,0.87)]">
+        <span className="font-['Satoshi',sans-serif] font-[700] text-[16px] text-[rgba(255,255,255,0.87)]">
           {conversation.creatorUsername}
         </span>
         <button
           onClick={() => navigate(`/creator/${conversation.creatorId}`)}
-          className="font-['Satoshi',sans-serif] font-[500] text-[12px] text-[#a5ff5f] hover:underline cursor-pointer"
+          className="font-['Satoshi',sans-serif] font-[500] text-[14px] text-[#a5ff5f] hover:underline cursor-pointer"
         >
           View Full Profile
         </button>
@@ -388,7 +432,7 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
       {localTime && (
         <div className="flex items-center gap-[8px] min-w-0">
           <Clock size={13} className="text-[rgba(255,255,255,0.4)] shrink-0" strokeWidth={1.5} />
-          <span className="font-['Satoshi',sans-serif] font-[400] text-[13px] text-[rgba(255,255,255,0.5)] min-w-0">
+          <span className="font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.5)] min-w-0">
             Local time {localTime}
           </span>
         </div>
@@ -423,7 +467,7 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
                   <span className="size-[28px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
                     <LinkPlatformIcon platform={entry.social.platform} className="size-[16px]" />
                   </span>
-                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.87)] truncate">
+                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.87)] truncate">
                     {entry.social.handle}
                   </span>
                   <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
@@ -439,7 +483,7 @@ function UserInfoPanel({ conversation }: { conversation: Conversation }) {
                   <span className="size-[28px] rounded-full bg-[#272727] flex items-center justify-center shrink-0 border border-[#323339]">
                     <LinkPlatformIcon platform={entry.link.platform} className="size-[16px]" />
                   </span>
-                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[12px] text-[rgba(255,255,255,0.87)] truncate">
+                  <span className="flex-1 min-w-0 font-['Satoshi',sans-serif] font-[400] text-[14px] text-[rgba(255,255,255,0.87)] truncate">
                     {entry.link.platform}
                   </span>
                   <ExternalLink size={12} className="text-[rgba(255,255,255,0.3)] shrink-0" strokeWidth={1.5} />
@@ -460,6 +504,7 @@ export function ChatPage() {
   const [newMessage, setNewMessage] = useState('');
   const [search, setSearch] = useState('');
   const [showInfoPanel, setShowInfoPanel] = useState(false);
+  const lgUp = useLgUp();
 
   const activeConv = useMemo(
     () => conversations.find((c) => c.id === conversationId),
@@ -467,9 +512,11 @@ export function ChatPage() {
   );
 
   useEffect(() => {
-    // Preserve route behavior: only auto-navigate when no conversationId is provided.
-    if (!conversationId && conversations.length > 0) navigate(`/chat/${conversations[0].id}`, { replace: true });
-  }, [conversationId, conversations, navigate]);
+    // Desktop: open a conversation by default. Mobile: start on the list view.
+    if (lgUp && !conversationId && conversations.length > 0) {
+      navigate(`/chat/${conversations[0].id}`, { replace: true });
+    }
+  }, [conversationId, conversations, navigate, lgUp]);
 
   const handleSend = () => {
     if (!newMessage.trim() || !activeConv) return;
@@ -482,9 +529,12 @@ export function ChatPage() {
     navigate(`/chat/${id}`);
   };
 
+  const shellClass =
+    'flex flex-col lg:flex-row h-full w-full min-w-0 bg-[#0e0c13] rounded-[16px] border border-[#323339] overflow-hidden';
+
   if (!activeConv) {
     return (
-      <div className="flex h-[calc(100vh-82px-80px)] w-full bg-[#0e0c13] rounded-[16px] border border-[#323339] overflow-hidden">
+      <div className={shellClass}>
         <ConversationList
           conversations={conversations}
           activeId={undefined}
@@ -492,29 +542,52 @@ export function ChatPage() {
           search={search}
           onSearchChange={setSearch}
         />
-        <ChatEmptyState />
+        <div className="hidden lg:flex">
+          <ChatEmptyState />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-82px-80px)] w-full bg-[#0e0c13] rounded-[16px] border border-[#323339] overflow-hidden">
-      <ConversationList
-        conversations={conversations}
-        activeId={activeConv.id}
-        onSelect={handleSelectConversation}
-        search={search}
-        onSearchChange={setSearch}
-      />
-      <ChatArea
-        conversation={activeConv}
-        newMessage={newMessage}
-        setNewMessage={setNewMessage}
-        onSend={handleSend}
-        showInfoPanel={showInfoPanel}
-        onToggleInfoPanel={() => setShowInfoPanel(!showInfoPanel)}
-      />
-      {showInfoPanel && <UserInfoPanel conversation={activeConv} />}
+    <div className={shellClass}>
+      <div className="hidden lg:flex">
+        <ConversationList
+          conversations={conversations}
+          activeId={activeConv.id}
+          onSelect={handleSelectConversation}
+          search={search}
+          onSearchChange={setSearch}
+        />
+      </div>
+      <div className="flex flex-1 min-h-0 min-w-0 flex-col lg:flex-row">
+        <ChatArea
+          conversation={activeConv}
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          onSend={handleSend}
+          showInfoPanel={showInfoPanel}
+          onToggleInfoPanel={() => setShowInfoPanel(!showInfoPanel)}
+          onBack={() => {
+            setShowInfoPanel(false);
+            navigate('/chat');
+          }}
+        />
+        {showInfoPanel && (
+          <>
+            <button
+              type="button"
+              className="fixed inset-0 top-[82px] z-[55] bg-black/55 lg:hidden border-0 p-0 cursor-default"
+              aria-label="Close profile details"
+              onClick={() => setShowInfoPanel(false)}
+            />
+            <UserInfoPanel
+              conversation={activeConv}
+              className="max-lg:fixed max-lg:top-[82px] max-lg:right-0 max-lg:z-[60] max-lg:h-[calc(100dvh-82px)] max-lg:w-[min(300px,calc(100vw-16px))] max-lg:border-l max-lg:border-t-0 max-lg:shadow-[-12px_0_40px_rgba(0,0,0,0.45)]"
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

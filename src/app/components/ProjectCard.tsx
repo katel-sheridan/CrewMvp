@@ -11,29 +11,19 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
   const { isProjectSaved, toggleSaveProject } = useSavedItems();
   const saved = isProjectSaved(project.id);
 
-  // Truncate description to first two sentences with ellipses
-  const truncateToTwoSentences = (text: string) => {
-    const sentenceEndings = /[.!?]\s+/g;
-    const matches = [...text.matchAll(sentenceEndings)];
-
-    if (matches.length < 2) return text;
-
-    const secondSentenceEnd = matches[1].index! + matches[1][0].length - 1;
-    return text.slice(0, secondSentenceEnd) + '...';
-  };
-
-  const displayDescription = truncateToTwoSentences(project.description);
-
   return (
-    <div className="bg-[#212226] rounded-[16px] flex h-[262px] items-center w-full overflow-hidden cursor-pointer group transition-all hover:ring-1 hover:ring-[#323339]" onClick={onClick}>
-      {/* Thumbnail */}
-      <div className="relative flex-1 h-full min-w-0">
+    <div
+      className="bg-[#212226] rounded-[16px] flex flex-col sm:flex-row sm:h-[262px] w-full overflow-hidden cursor-pointer group transition-all hover:ring-1 hover:ring-[#323339]"
+      onClick={onClick}
+    >
+      {/* Thumbnail: stacked full-width on small screens; in row mode keep a min width so the image never vanishes */}
+      <div className="relative w-full sm:flex-1 h-[200px] sm:h-full sm:min-w-[200px] md:min-w-[220px] shrink-0">
         <div className="absolute inset-0 bg-[rgba(255,255,255,0.12)]" />
         <img alt={project.title} className="absolute inset-0 object-cover size-full" src={project.thumbnail} />
       </div>
 
-      {/* Info */}
-      <div className="w-[714px] shrink-0 h-full flex flex-col justify-center px-[20px] py-[16px] gap-[12px]">
+      {/* Info — can shrink on mid breakpoints; fixed 714px on large screens */}
+      <div className="w-full sm:flex-1 sm:min-w-0 lg:w-[714px] lg:flex-none lg:shrink-0 h-full flex flex-col justify-center px-[20px] py-[16px] gap-[12px]">
         {/* Tags row */}
         <div className="flex items-center justify-between w-full">
           <div className="flex gap-[6px] items-start">
@@ -52,7 +42,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
           <div className="flex gap-[12px] items-center">
             {project.deadlineDays && (
-              <span className="bg-[#352a17] border border-[#614e2d] flex h-[24px] items-center justify-center px-[8px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(236,215,178,0.87)] text-center whitespace-nowrap">
+              <span className="bg-[#352a17] border border-[#614e2d] flex h-[24px] items-center justify-center px-[8px] py-[4px] rounded-[12px] font-['Satoshi',sans-serif] font-[500] text-[12px] text-[rgba(251,191,36,0.87)] text-center whitespace-nowrap">
                 Deadline in {project.deadlineDays} days
               </span>
             )}
@@ -77,8 +67,8 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         </div>
 
         {/* Description */}
-        <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[16px] text-[rgba(255,255,255,0.6)]">
-          {displayDescription}
+        <p className="font-['Satoshi',sans-serif] font-[400] leading-[1.4] text-[16px] text-[rgba(255,255,255,0.6)] line-clamp-2">
+          {project.description}
         </p>
 
         {/* Looking for */}
