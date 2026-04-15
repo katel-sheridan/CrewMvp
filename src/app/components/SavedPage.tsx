@@ -66,23 +66,23 @@ export function SavedPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] justify-items-center">
-            {savedCreatorsList.length > 0 ? (
-              savedCreatorsList.map((creator) => (
+          savedCreatorsList.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px] justify-items-center">
+              {savedCreatorsList.map((creator) => (
                 <CreatorCard
                   key={creator.id}
                   creator={creator}
                   onClick={() => navigate(`/creator/${creator.id}`)}
                 />
-              ))
-            ) : (
-              <div className="col-span-full flex items-center justify-center h-[200px] bg-[#212226] rounded-[8px]">
-                <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.38)]">
-                  No saved creators yet
-                </p>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[200px] bg-[#212226] rounded-[8px] w-full">
+              <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.38)]">
+                No saved creators yet
+              </p>
+            </div>
+          )
         )}
       </div>
     </div>
