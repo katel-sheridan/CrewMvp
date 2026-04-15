@@ -230,7 +230,7 @@ const creatorsRaw: Creator[] = [
     avatar: avatarEuphy,
     profileBannerColor: '#1f5a3b',
     bio: "I'm looking for someone to collab with to make a comic! I specialize in character design and sequential art.",
-    portfolioImages: [imgEuphy1, imgEuphy2, imgEuphy3],
+    portfolioImages: [imgEuphy1, imgEuphy2, imgEuphy1],
     skillTags: ['Illustrator', 'Writer'],
     interestTags: ['Marvel Cinematic Universe', 'Honkai Star Rail'],
     paymentType: 'Hobby',
