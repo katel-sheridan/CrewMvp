@@ -11,9 +11,9 @@ function PendingApplicationsList() {
 
   if (pending.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-[12px] min-h-[240px] bg-[#212226] border border-[#323339] rounded-[16px] px-[24px] py-[40px]">
-        <p className="font-['Satoshi',sans-serif] text-[16px] text-[rgba(255,255,255,0.5)] text-center">
-          You don’t have any applications yet. Browse projects and tap <span className="text-[rgba(255,255,255,0.75)]">Apply to Project</span> to share your profile with a listing owner.
+      <div className="flex items-center justify-center h-[200px] bg-[#212226] rounded-[8px]">
+        <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.38)]">
+          No applications yet
         </p>
       </div>
     );
@@ -68,15 +68,10 @@ function PendingApplicationsList() {
 
 export function ApplicationsPage() {
   return (
-    <div className="flex flex-col gap-[32px] w-full min-w-0">
-      <div className="flex flex-col gap-[8px]">
-        <h1 className="font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[28px] sm:text-[36px] text-[rgba(255,255,255,0.87)]">
-          Applications
-        </h1>
-        <p className="font-['Satoshi',sans-serif] font-[400] text-[16px] text-[rgba(255,255,255,0.5)] leading-[1.5] max-w-[640px]">
-          Projects you’ve applied to appear here while your request is pending review.
-        </p>
-      </div>
+    <div className="flex flex-col gap-[48px] w-full min-w-0">
+      <h1 className="font-['Tahoma',sans-serif] font-[700] leading-[1.1] text-[36px] text-[rgba(255,255,255,0.87)]">
+        Applications
+      </h1>
       <PendingApplicationsList />
     </div>
   );
